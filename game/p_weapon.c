@@ -818,18 +818,33 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	vec3_t	forward, right;
 	vec3_t	start;
 	vec3_t	offset;
+	int knockback;
 
 	if (is_quad)
 		damage *= 4;
 	AngleVectors (ent->client->v_angle, forward, right, NULL);
-	VectorSet(offset, 24, 8, ent->viewheight-8);
-	VectorAdd (offset, g_offset, offset);
-	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
-	VectorScale (forward, -2, ent->client->kick_origin);
-	ent->client->kick_angles[0] = -1;
+	VectorScale(forward, -3, ent->client->kick_origin);
+	ent->client->kick_angles[0] = -3;
 
-	fire_blaster (ent, start, forward, damage, 1000, effect, hyper);
+	VectorSet(offset, 0, 7, ent->viewheight - 8);
+
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
+	knockback = 200;
+	fire_rail(ent, start, forward, 0, knockback);
+
+	if (knockback) {
+		vec3_t	kvel;
+		float	mass;
+		if (ent->mass < 50)
+			mass = 50;
+		else
+			mass = ent->mass;
+
+		VectorScale(forward, 1600.0 * (float)knockback / mass, kvel);
+		VectorAdd(ent->velocity, kvel, ent->velocity);
+	}
+
 
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);
