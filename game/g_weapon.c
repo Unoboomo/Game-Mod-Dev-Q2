@@ -123,6 +123,56 @@ qboolean fire_hit (edict_t *self, vec3_t aim, int damage, int kick)
 	return true;
 }
 
+/*
+=================
+fire_pickaxe
+
+Used to hitscan melee
+
+References:
+Patrick Wagstrom(Pridkett), www.web.archive.org/web/20051227025942///www.planetquake.com/qdevels/quake2/5_1_98.html
+Dan Eisner (DanE), www.web.archive.org/web/20051227030437/www.planetquake.com/qdevels/quake2/16_1_98.html
+=================
+*/
+
+void fire_pickaxe(edict_t* self, vec3_t start, vec3_t aimdir, int damage, int kick)
+{
+	trace_t		tr;
+	vec3_t		end;
+
+	// MAGIC NUMBERS!!!!
+	const int Pickaxe_Range = 60;
+
+	int		mod = MOD_BLASTER;
+
+	VectorMA(start, Pickaxe_Range, aimdir, end);  //calculates the range vector
+
+	tr = gi.trace(self->s.origin, NULL, NULL, end, self, MASK_SHOT);
+
+	if (!((tr.surface) && (tr.surface->flags & SURF_SKY))) //dont hit the sky
+	{
+		if (tr.fraction < 1.0) //if we hit something (if trace does not reach end)
+		{
+			if (tr.ent->takedamage) //if thing can take damage, damage it
+			{
+				T_Damage(tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, DAMAGE_ENERGY, mod);
+			}
+			else
+			{
+				gi.WriteByte(svc_temp_entity);
+				gi.WriteByte(TE_GUNSHOT);
+				gi.WritePosition(tr.endpos);
+				gi.WriteDir(tr.plane.normal);
+				gi.multicast(tr.endpos, MULTICAST_PVS);
+
+				if (self->client)
+					PlayerNoise(self, tr.endpos, PNOISE_IMPACT);
+			}
+		}
+	}
+	return;
+}
+
 
 /*
 =================

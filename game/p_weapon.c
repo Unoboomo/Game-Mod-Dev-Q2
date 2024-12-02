@@ -804,6 +804,63 @@ void Weapon_RocketLauncher (edict_t *ent)
 	Weapon_Generic (ent, 4, 12, 50, 54, pause_frames, fire_frames, Weapon_RocketLauncher_Fire);
 }
 
+/*
+======================================================================
+
+PICKAXE (SWORD)
+
+New Fire for blaster item (so i dont need to find all the spots where it is required, etc. change behavior)
+
+References:
+Patrick Wagstrom(Pridkett), www.web.archive.org/web/20051227025942///www.planetquake.com/qdevels/quake2/5_1_98.html
+Dan Eisner (DanE), www.web.archive.org/web/20051227030437/www.planetquake.com/qdevels/quake2/16_1_98.html
+======================================================================
+*/
+void Pickaxe_Fire(edict_t* ent, vec3_t g_offset, int damage)
+{
+	vec3_t	forward, right;
+	vec3_t	start;
+	vec3_t	offset;
+
+	// MAGIC NUMBERS!!!!!
+	const int Pickaxe_Knockback = 200;
+
+	if (is_quad)
+		damage *= 4;
+	AngleVectors(ent->client->v_angle, forward, right, NULL);
+	VectorSet(offset, 24, 8, ent->viewheight - 8);
+	VectorAdd(offset, g_offset, offset);
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
+
+	VectorScale(forward, -2, ent->client->kick_origin);
+	ent->client->kick_angles[0] = -1;
+
+	fire_pickaxe(ent, start, forward, damage, Pickaxe_Knockback);
+}
+
+void Weapon_Pickaxe_Fire(edict_t* ent)
+{
+	int		damage;
+
+	// MAGIC NUMBERS!!!!!
+	const int Pickaxe_Normal_Damage = 30;
+	const int Pickaxe_DM_Damage = 45;
+
+	if (deathmatch->value)
+		damage = Pickaxe_DM_Damage;
+	else
+		damage = Pickaxe_Normal_Damage;
+	Pickaxe_Fire(ent, vec3_origin, damage);
+	ent->client->ps.gunframe++;
+}
+
+void Weapon_Pickaxe(edict_t* ent)
+{
+	static int	pause_frames[] = { 19, 32, 0 };
+	static int	fire_frames[] = { 5, 0 };
+
+	Weapon_Generic(ent, 4, 8, 52, 55, pause_frames, fire_frames, Weapon_Pickaxe_Fire);
+}
 
 /*
 ======================================================================
