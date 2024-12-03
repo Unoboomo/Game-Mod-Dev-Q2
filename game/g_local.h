@@ -865,6 +865,10 @@ typedef struct
 	int			helpchanged;
 
 	qboolean	spectator;			// client is a spectator
+
+	//Persistant Data for UnderQuake
+	qboolean	vampire;
+
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns

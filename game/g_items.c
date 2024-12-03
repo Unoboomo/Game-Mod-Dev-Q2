@@ -337,6 +337,14 @@ qboolean Pickup_Pack (edict_t *ent, edict_t *other)
 	return true;
 }
 
+// UnderQuake pickups
+qboolean Pickup_Vampirism(edict_t* ent, edict_t* other)
+{
+	other->client->pers.vampire = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
+
 //======================================================================
 
 void Use_Quad (edict_t *ent, gitem_t *item)
@@ -2112,6 +2120,31 @@ tank commander's head
 		NULL,
 		0,
 /* precache */ "items/s_health.wav items/n_health.wav items/l_health.wav items/m_health.wav"
+	},
+
+/*UnderQuake item_vampirism (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+heals 5% of damage dealt
+*/
+	{
+		"item_vampirism",
+		Pickup_Vampirism,
+		NULL,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Vampirism",
+		/* width */		2,
+				NULL
+,
+				NULL,
+				0,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
 	},
 
 	// end of list marker
