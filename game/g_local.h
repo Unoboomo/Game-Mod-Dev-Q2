@@ -736,6 +736,8 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 
 // declare fire pickaxe
 void fire_pickaxe(edict_t* self, vec3_t start, vec3_t aimdir, int damage, int kick);
+// declare throw pickaxe
+void throw_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean hyper);
 
 //
 // g_ptrail.c
@@ -1119,3 +1121,9 @@ struct edict_s
 	monsterinfo_t	monsterinfo;
 };
 
+/*
+* @breif This checks to see if the pickaxe entity exists (is thrown)
+* @param Takes no parameters
+* @return Returns true if the entity exists, false if not
+*/
+qboolean Is_Thrown(void);

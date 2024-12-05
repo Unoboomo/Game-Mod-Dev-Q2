@@ -856,6 +856,11 @@ void Weapon_Pickaxe_Fire(edict_t* ent)
 
 void Weapon_Pickaxe(edict_t* ent)
 {
+	// Adding a check to see if the pickaxe has been thrown, if so, return
+	if (Is_Thrown()) {
+		return;
+	}
+
 	static int	pause_frames[] = { 19, 32, 0 };
 	static int	fire_frames[] = { 5, 0 };
 	int n = 9;

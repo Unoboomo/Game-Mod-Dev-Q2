@@ -1874,3 +1874,20 @@ void SP_misc_teleporter_dest (edict_t *ent)
 	gi.linkentity (ent);
 }
 
+
+qboolean Is_Thrown(void)
+{
+	edict_t* ent_list;
+
+	ent_list = g_edicts;
+	for (; ent_list < &g_edicts[globals.num_edicts]; ent_list++)
+	{
+		if (!ent_list->inuse)
+			continue;
+		if (!Q_stricmp(ent_list->classname, "pickaxe")) {
+			return true;
+		}
+
+	}
+	return false;
+}

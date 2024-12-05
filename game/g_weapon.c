@@ -123,56 +123,6 @@ qboolean fire_hit (edict_t *self, vec3_t aim, int damage, int kick)
 	return true;
 }
 
-/*
-=================
-fire_pickaxe
-
-Used to hitscan melee
-
-References:
-Patrick Wagstrom(Pridkett), www.web.archive.org/web/20051227025942///www.planetquake.com/qdevels/quake2/5_1_98.html
-Dan Eisner (DanE), www.web.archive.org/web/20051227030437/www.planetquake.com/qdevels/quake2/16_1_98.html
-=================
-*/
-
-void fire_pickaxe(edict_t* self, vec3_t start, vec3_t aimdir, int damage, int kick)
-{
-	trace_t		tr;
-	vec3_t		end;
-
-	// MAGIC NUMBERS!!!!
-	const int Pickaxe_Range = 60;
-
-	int		mod = MOD_BLASTER;
-
-	VectorMA(start, Pickaxe_Range, aimdir, end);  //calculates the range vector
-
-	tr = gi.trace(self->s.origin, NULL, NULL, end, self, MASK_SHOT);
-
-	if (!((tr.surface) && (tr.surface->flags & SURF_SKY))) //dont hit the sky
-	{
-		if (tr.fraction < 1.0) //if we hit something (if trace does not reach end)
-		{
-			if (tr.ent->takedamage) //if thing can take damage, damage it
-			{
-				T_Damage(tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, DAMAGE_ENERGY, mod);
-			}
-			else
-			{
-				gi.WriteByte(svc_temp_entity);
-				gi.WriteByte(TE_GUNSHOT);
-				gi.WritePosition(tr.endpos);
-				gi.WriteDir(tr.plane.normal);
-				gi.multicast(tr.endpos, MULTICAST_PVS);
-
-				if (self->client)
-					PlayerNoise(self, tr.endpos, PNOISE_IMPACT);
-			}
-		}
-	}
-	return;
-}
-
 
 /*
 =================
@@ -963,4 +913,109 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 		check_dodge (self, bfg->s.origin, dir, speed);
 
 	gi.linkentity (bfg);
+}
+
+/*
+=================
+fire_pickaxe
+
+Used to hitscan melee
+
+References:
+Patrick Wagstrom(Pridkett), www.web.archive.org/web/20051227025942///www.planetquake.com/qdevels/quake2/5_1_98.html
+Dan Eisner (DanE), www.web.archive.org/web/20051227030437/www.planetquake.com/qdevels/quake2/16_1_98.html
+=================
+*/
+
+void fire_pickaxe(edict_t* self, vec3_t start, vec3_t aimdir, int damage, int kick)
+{
+	trace_t		tr;
+	vec3_t		end;
+
+	// MAGIC NUMBERS!!!!
+	const int Pickaxe_Range = 60;
+
+	int		mod = MOD_BLASTER;
+
+	VectorMA(start, Pickaxe_Range, aimdir, end);  //calculates the range vector
+
+	tr = gi.trace(self->s.origin, NULL, NULL, end, self, MASK_SHOT);
+
+	if (!((tr.surface) && (tr.surface->flags & SURF_SKY))) //dont hit the sky
+	{
+		if (tr.fraction < 1.0) //if we hit something (if trace does not reach end)
+		{
+			if (tr.ent->takedamage) //if thing can take damage, damage it
+			{
+				T_Damage(tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, DAMAGE_ENERGY, mod);
+			}
+			else
+			{
+				gi.WriteByte(svc_temp_entity);
+				gi.WriteByte(TE_GUNSHOT);
+				gi.WritePosition(tr.endpos);
+				gi.WriteDir(tr.plane.normal);
+				gi.multicast(tr.endpos, MULTICAST_PVS);
+
+				if (self->client)
+					PlayerNoise(self, tr.endpos, PNOISE_IMPACT);
+			}
+		}
+	}
+	return;
+}
+
+/*
+=================
+throw_pickaxe
+
+Used for pickaxe throw command
+=================
+*/
+
+void throw_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean hyper)
+{
+	edict_t* pickaxe;
+	trace_t	tr;
+
+	VectorNormalize(dir);
+
+	pickaxe = G_Spawn();
+	pickaxe->svflags = SVF_DEADMONSTER;
+	// yes, I know it looks weird that projectiles are deadmonsters
+	// what this means is that when prediction is used against the object
+	// (blaster/hyperblaster shots), the player won't be solid clipped against
+	// the object.  Right now trying to run into a firing hyperblaster
+	// is very jerky since you are predicted 'against' the shots.
+	VectorCopy(start, pickaxe->s.origin);
+	VectorCopy(start, pickaxe->s.old_origin);
+	vectoangles(dir, pickaxe->s.angles);
+	VectorScale(dir, speed, pickaxe->velocity);
+	pickaxe->movetype = MOVETYPE_FLYMISSILE;
+	pickaxe->clipmask = MASK_SHOT;
+	pickaxe->solid = SOLID_BBOX;
+	pickaxe->s.effects |= effect;
+	VectorClear(pickaxe->mins);
+	VectorClear(pickaxe->maxs);
+	pickaxe->s.modelindex = gi.modelindex("models/objects/laser/tris.md2");
+	pickaxe->s.sound = gi.soundindex("misc/lasfly.wav");
+	pickaxe->owner = self;
+	pickaxe->touch = blaster_touch;
+	pickaxe->nextthink = level.time + 0.75;
+	pickaxe->think = G_FreeEdict;
+	pickaxe->dmg = damage;
+	pickaxe->classname = "pickaxe";
+	if (hyper)
+		pickaxe->spawnflags = 1;
+	gi.linkentity(pickaxe);
+
+	if (self->client)
+		check_dodge(self, pickaxe->s.origin, dir, speed);
+
+	tr = gi.trace(self->s.origin, NULL, NULL, pickaxe->s.origin, pickaxe, MASK_SHOT);
+	if (tr.fraction < 1.0)
+	{
+		VectorMA(pickaxe->s.origin, -10, dir, pickaxe->s.origin);
+		pickaxe->touch(pickaxe, tr.ent, NULL, NULL);
+	}
 }
