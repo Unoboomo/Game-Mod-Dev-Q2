@@ -1891,3 +1891,24 @@ qboolean Is_Thrown(void)
 	}
 	return false;
 }
+
+void Dash(edict_t* ent, int dash_power)
+{
+	vec3_t	forward;
+
+	AngleVectors(ent->client->v_angle, forward, NULL, NULL);
+
+	if (dash_power) {
+		vec3_t	kvel;
+		float	mass;
+		if (ent->mass < 50)
+			mass = 50;
+		else
+			mass = ent->mass;
+
+		VectorScale(forward, 1600.0 * (float)dash_power / mass, kvel);
+		VectorAdd(ent->velocity, kvel, ent->velocity);
+
+	}
+	
+}

@@ -627,6 +627,12 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.max_slugs		= 50;
 
 	client->pers.connected = true;
+
+	//Initialize UnderQuake Persistent variables
+	client->pers.vampire = false;
+	client->pers.gloved = false;
+	client->pers.max_dashes = 1;
+	client->pers.dash_recharge_time = (float) 0.5;
 }
 
 
@@ -1761,7 +1767,16 @@ void ClientBeginServerFrame (edict_t *ent)
 		return;
 
 	client = ent->client;
-
+	// Check grounded to reset dashes
+	if (ent->groundentity) {
+		if (!client->last_dash_recharge) {
+			client->last_dash_recharge = level.time;
+		}
+		if (client->dashes < client->pers.max_dashes && (client->last_dash_recharge + client->pers.dash_recharge_time) < level.time) {
+			client->dashes = client->pers.max_dashes;
+			client->last_dash_recharge = level.time;
+		}
+	}
 	if (deathmatch->value &&
 		client->pers.spectator != client->resp.spectator &&
 		(level.time - client->respawn_time) >= 5) {

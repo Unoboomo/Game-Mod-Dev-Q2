@@ -948,6 +948,26 @@ void Cmd_Throw_f(edict_t* ent)
 }
 
 /*
+==================
+Cmd_Dash_f
+
+Dash ability, boosts player foreward velocity
+
+command word = "dash"
+==================
+*/
+void Cmd_Dash_f(edict_t* ent)
+{
+	int dash_power;
+	dash_power = 75;
+	
+	if (ent->client->dashes > 0) {
+		ent->client->dashes--;
+		Dash(ent,dash_power);
+	}
+}
+
+/*
 =================
 ClientCommand
 =================
@@ -1036,6 +1056,8 @@ void ClientCommand (edict_t *ent)
 		Cmd_PlayerList_f(ent);
 	else if (Q_stricmp(cmd, "throw") == 0)
 		Cmd_Throw_f(ent);
+	else if (Q_stricmp(cmd, "dash") == 0)
+		Cmd_Dash_f(ent);
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
 }

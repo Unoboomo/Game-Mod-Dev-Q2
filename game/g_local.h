@@ -868,9 +868,13 @@ typedef struct
 
 	qboolean	spectator;			// client is a spectator
 
-	//Persistant Data for UnderQuake
+	//Persistant Data for UnderQuake Relics
 	qboolean	vampire;
 	qboolean	gloved;
+
+	//Persistant Data for Underquake Abilities
+	int max_dashes;
+	float dash_recharge_time;
 
 } client_persistant_t;
 
@@ -969,6 +973,10 @@ struct gclient_s
 
 	edict_t		*chase_target;		// player we are chasing
 	qboolean	update_chase;		// need to update chase info?
+
+	//UnderQuake Variables
+	int dashes;
+	float last_dash_recharge;
 };
 
 
@@ -1127,3 +1135,9 @@ struct edict_s
 * @return Returns true if the entity exists, false if not
 */
 qboolean Is_Thrown(void);
+
+/*
+* @breif Makes an entity dash foreward 
+* @param Takes an entity (to be dashed), and an integer (power to dash with)
+*/
+void Dash(edict_t* ent, int dash_power);
