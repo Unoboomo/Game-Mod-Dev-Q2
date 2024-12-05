@@ -446,7 +446,14 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 			VectorAdd (targ->velocity, kvel, targ->velocity);
 		}
 	}
+	// UnderQuake Damage Modifiers
 
+	//Berserker
+	if (attacker->client) {
+		if (attacker->client->pers.berserk) {
+			damage *= (1 - ((float) (attacker->health - attacker->max_health)) / (float) 120);
+		}
+	}
 	take = damage;
 	save = 0;
 
@@ -469,7 +476,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		take = 0;
 		save = damage;
 	}
-
+	// UnderQuake Using Damage Dealt
 	psave = CheckPowerArmor (targ, point, normal, take, dflags);
 	take -= psave;
 
@@ -508,7 +515,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 
 
 		targ->health = targ->health - take;
-			
+		// Here for extra life
 		if (targ->health <= 0)
 		{
 			if ((targ->svflags & SVF_MONSTER) || (client))

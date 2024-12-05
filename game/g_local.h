@@ -871,6 +871,7 @@ typedef struct
 	//Persistant Data for UnderQuake Relics
 	qboolean	vampire;
 	qboolean	gloved;
+	qboolean	berserk;
 
 	//Persistant Data for Underquake Abilities
 	int max_dashes;

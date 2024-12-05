@@ -921,9 +921,10 @@ fire_pickaxe
 
 Used to hitscan melee
 
-References:
+Adapted From:
 Patrick Wagstrom(Pridkett), www.web.archive.org/web/20051227025942///www.planetquake.com/qdevels/quake2/5_1_98.html
 Dan Eisner (DanE), www.web.archive.org/web/20051227030437/www.planetquake.com/qdevels/quake2/16_1_98.html
+12/1/24
 =================
 */
 

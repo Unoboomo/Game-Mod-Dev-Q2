@@ -631,6 +631,7 @@ void InitClientPersistant (gclient_t *client)
 	//Initialize UnderQuake Persistent variables
 	client->pers.vampire = false;
 	client->pers.gloved = false;
+	client->pers.berserk = false;
 	client->pers.max_dashes = 1;
 	client->pers.dash_recharge_time = (float) 0.5;
 }

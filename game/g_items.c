@@ -352,6 +352,12 @@ qboolean Pickup_Sturdy_Gloves(edict_t* ent, edict_t* other)
 	return true;
 }
 
+qboolean Pickup_Berserker(edict_t* ent, edict_t* other)
+{
+	other->client->pers.berserk = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
 //======================================================================
 
 void Use_Quad (edict_t *ent, gitem_t *item)
@@ -2168,6 +2174,31 @@ increases fire rate by 20%
 		NULL,
 		/* icon */		"p_adrenaline",
 		/* pickup */	"Sturdy Gloves",
+		/* width */		2,
+				NULL
+,
+				NULL,
+				0,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+
+/*UnderQuake item_berserker (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+increased damage at lower health
+*/
+	{
+		"item_berserker",
+		Pickup_Berserker,
+		NULL,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Berserker",
 		/* width */		2,
 				NULL
 ,

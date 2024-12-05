@@ -811,9 +811,10 @@ PICKAXE (SWORD)
 
 New Fire for blaster item (so i dont need to find all the spots where it is required, etc. change behavior)
 
-References:
+Adapted From:
 Patrick Wagstrom(Pridkett), www.web.archive.org/web/20051227025942///www.planetquake.com/qdevels/quake2/5_1_98.html
 Dan Eisner (DanE), www.web.archive.org/web/20051227030437/www.planetquake.com/qdevels/quake2/16_1_98.html
+12/1/24
 ======================================================================
 */
 void Pickaxe_Fire(edict_t* ent, vec3_t g_offset, int damage)
