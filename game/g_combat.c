@@ -477,6 +477,22 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		save = damage;
 	}
 	// UnderQuake Using Damage Dealt
+	
+	//Vampirism
+	if (attacker->client) {
+		if (attacker->client->pers.vampire) {
+			if (attacker->health < attacker->max_health) {
+				// 5% lifesteal
+				attacker->health += take * 0.05;
+
+				// dont heal over max health
+				if (attacker->health > attacker->max_health)
+					attacker->health = attacker->max_health;
+
+			}
+		}
+	}
+
 	psave = CheckPowerArmor (targ, point, normal, take, dflags);
 	take -= psave;
 
@@ -493,21 +509,6 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 // do the damage
 	if (take)
 	{
-		//Vampirism
-		if (attacker->client) {
-			if (attacker->client->pers.vampire) {
-				if (attacker->health < attacker->max_health) {
-					// 5% lifesteal
-					attacker->health += take * 0.05;
-
-					// dont heal over max health
-					if (attacker->health > attacker->max_health)
-						attacker->health = attacker->max_health;
-
-				}
-			}
-		}
-
 		if ((targ->svflags & SVF_MONSTER) || (client))
 			SpawnDamage (TE_BLOOD, point, normal, take);
 		else
