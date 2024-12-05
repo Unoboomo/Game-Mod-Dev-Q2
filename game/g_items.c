@@ -345,6 +345,13 @@ qboolean Pickup_Vampirism(edict_t* ent, edict_t* other)
 	return true;
 }
 
+qboolean Pickup_Sturdy_Gloves(edict_t* ent, edict_t* other)
+{
+	other->client->pers.gloved = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
+
 //======================================================================
 
 void Use_Quad (edict_t *ent, gitem_t *item)
@@ -2147,6 +2154,30 @@ heals 5% of damage dealt
 				/* precache */ ""
 	},
 
+/*UnderQuake item_sturdy_gloves (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+increases fire rate by 20%
+*/
+	{
+		"item_sturdy_gloves",
+		Pickup_Sturdy_Gloves,
+		NULL,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Sturdy Gloves",
+		/* width */		2,
+				NULL
+,
+				NULL,
+				0,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
 	// end of list marker
 	{NULL}
 };

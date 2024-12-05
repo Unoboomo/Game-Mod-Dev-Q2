@@ -868,6 +868,7 @@ typedef struct
 
 	//Persistant Data for UnderQuake
 	qboolean	vampire;
+	qboolean	gloved;
 
 } client_persistant_t;
 

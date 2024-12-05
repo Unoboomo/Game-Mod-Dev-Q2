@@ -858,8 +858,16 @@ void Weapon_Pickaxe(edict_t* ent)
 {
 	static int	pause_frames[] = { 19, 32, 0 };
 	static int	fire_frames[] = { 5, 0 };
-
-	Weapon_Generic(ent, 4, 8, 52, 55, pause_frames, fire_frames, Weapon_Pickaxe_Fire);
+	int n = 9;
+	/* Fire Rate(Swings per second) = 10 / (n - 3)
+	* n = 9 -> fire rate = 1.666... swings per second
+	* n = 8 -> fire rate = 2 swings per second
+	* going from n = 9 -> n = 8 is a 20% fire rate boost
+	*/
+	if (ent->client->pers.gloved == true) {
+		n = 8;
+	}
+	Weapon_Generic(ent, 4, n, 52, 55, pause_frames, fire_frames, Weapon_Pickaxe_Fire);
 }
 
 /*
