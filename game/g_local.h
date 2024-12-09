@@ -872,6 +872,7 @@ typedef struct
 	qboolean	vampire;
 	qboolean	gloved;
 	qboolean	berserk;
+	int			second_chance;
 
 	//Persistant Data for Underquake Abilities
 	int max_dashes;
