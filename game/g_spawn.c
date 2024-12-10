@@ -523,8 +523,56 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 	int			inhibit;
 	char		*com_token;
 	int			i;
+	int			j;
+	int			k;
 	float		skill_level;
+	//variables needed for item hijacking
+	gitem_t		*item;
+	edict_t*	ent_list;
 
+	int			item_flags = 0;
+	int			rand_index;
+
+	struct tm*	ltime;
+	time_t		gmtime;
+	int			rand_seed;
+
+	int			relic_bounds[2];
+	int			relic_list[MAX_RELICS]; //change the size of this array if the number of relics exceeds 20
+	int			relic_list_length; //relative length of the relic_list, number of indexes of data used
+
+
+	//get current time to random seed rand
+	time(&gmtime);
+	ltime = localtime(&gmtime);
+	rand_seed = ltime->tm_hour * 3600 + ltime->tm_min * 60 + ltime->tm_sec;
+	srand(rand_seed);
+	
+	//find index bounds
+	Item_List_Bounds(IT_RELIC,relic_bounds);
+	gi.dprintf("%d, %d are the bounds\n", relic_bounds[0],relic_bounds[1]);
+
+	relic_list_length = 0;
+	for (i = 0; i <= (relic_bounds[1] - relic_bounds[0]); i++) {
+		relic_list[i] = relic_bounds[0] + i;
+		relic_list_length++;
+	}
+	//check to see if relics are already in a players inventory, if they are, remove from relic_list
+	for (i = relic_list_length - 1; i >=0 ; i--) {
+		for (j = 0; j < game.maxclients; j++)
+		{
+			ent_list = &g_edicts[1 + j];
+			if (game.clients[j].pers.inventory[relic_list[i]] > 0) {
+				gi.dprintf("%d is already in a player inventory\n", relic_list[i]);
+				for (k = i; k < MAX_RELICS - 1; k++) {
+					relic_list[k] = relic_list[k + 1];
+				}
+				relic_list_length--;
+				break;
+			}
+
+		}
+	}
 	skill_level = floor (skill->value);
 	if (skill_level < 0)
 		skill_level = 0;
@@ -598,7 +646,49 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 
 			ent->spawnflags &= ~(SPAWNFLAG_NOT_EASY|SPAWNFLAG_NOT_MEDIUM|SPAWNFLAG_NOT_HARD|SPAWNFLAG_NOT_COOP|SPAWNFLAG_NOT_DEATHMATCH);
 		}
+		
+		if (ent) {
+			item_flags = 0;
 
+			//check if ent is an item, if so, grab its flags
+			for (i=0, item = itemlist; i < game.num_items; i++, item++)
+			{
+				if (!item->classname)
+					continue;
+				if (!strcmp(item->classname, ent->classname))
+				{	// found it
+					item_flags = item->flags;
+				}
+			}
+
+			//swap weapons for relics
+			if (item_flags & IT_WEAPON) {
+				
+				//get a random index between the start and end of the relic section inclusive
+				rand_index = random() * relic_list_length;
+
+				gi.dprintf("%d is random\n", rand_index);
+				gi.dprintf("%d is random\n", relic_list[rand_index]);
+
+				if (relic_list[rand_index] == 0) {	//no more relics
+					gi.dprintf("no more relics\n");
+					G_FreeEdict(ent);
+					inhibit++;
+					continue;
+				}
+				//change classname of entity to relic classname
+				item = GetItemByIndex(relic_list[rand_index]);
+				ent->classname = item->classname;
+				gi.dprintf("changed classname to %s\n", item->classname);
+
+				//remove index of spawned item from list, so to not have duplicates
+				for (i = rand_index; i < MAX_RELICS - 1; i++) {
+					relic_list[i] = relic_list[i + 1];
+				}
+				relic_list_length--;
+			}
+		}
+		
 		ED_CallSpawn (ent);
 	}	
 

@@ -1912,3 +1912,32 @@ void Dash(edict_t* ent, int dash_power)
 	}
 	
 }
+void Item_List_Bounds(int FLAG, int bounds[])
+{
+	int			i;
+	int			list_start = 0;
+	int			list_end = 0;
+	gitem_t*	item;
+
+	//iterate through item list to find start and end indexes of the relic section
+	for (i = 0, item = itemlist; i < game.num_items; i++, item++)
+	{
+		if (!item->classname) {
+			continue;
+		}
+		if (item->flags & FLAG && !list_start)
+		{	// found start of Relic List
+			list_start = ITEM_INDEX(item);
+		}
+		if (!(item->flags & FLAG) && list_start) {
+			// if not a relic and there is list_start, the item before was a relic
+			list_end = ITEM_INDEX(item) - 1;
+		}
+	}
+	//if through the whole list and no listend, a relic is the second to last item
+	if (!list_end) {
+		list_end = game.num_items - 1;
+	}
+	bounds[0] = list_start;
+	bounds[1] = list_end;
+}

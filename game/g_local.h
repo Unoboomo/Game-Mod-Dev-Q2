@@ -217,6 +217,13 @@ typedef struct
 #define IT_STAY_COOP	8
 #define IT_KEY			16
 #define IT_POWERUP		32
+//for permenant upgrades like adrenaline, etc.
+#define IT_UPGRADE		64
+
+// Underquake gitem_t->flags
+#define IT_RELIC			128
+#define IT_PICKAXE_UPGRADE	256
+#define IT_ABILITY_UPGRADE	512
 
 // gitem_t->weapmodel for weapons indicates model index
 #define WEAP_BLASTER			1 
@@ -1143,3 +1150,12 @@ qboolean Is_Thrown(void);
 * @param Takes an entity (to be dashed), and an integer (power to dash with)
 */
 void Dash(edict_t* ent, int dash_power);
+
+/*
+* @breif Finds the lowest and highest index of an item of type FLAG in the itemlist, puts them in the bounds array
+* @param Takes an int parameter (should be a gitem_t->flags type) and an integer array of size 2
+* @return Returns a list of lowest and highest index of item of type FLAG
+*/
+void Item_List_Bounds(int FLAG, int bounds[]);
+
+#define MAX_RELICS	20
