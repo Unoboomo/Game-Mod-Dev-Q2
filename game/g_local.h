@@ -876,12 +876,13 @@ typedef struct
 	qboolean	spectator;			// client is a spectator
 
 	//Persistant Data for UnderQuake Relics
-	qboolean	vampire;
-	qboolean	gloved;
-	qboolean	berserk;
-	int			second_chance;
-	qboolean	master_pickaxe;
-	qboolean	sonic;
+	qboolean	vampire;			//Vampirism
+	qboolean	gloved;				//Sturdy Gloves
+	qboolean	berserk;			//Berserker
+	int			second_chance;		//Second Chance
+	qboolean	master_pickaxe;		//Master Pickaxe
+	qboolean	sonic;				//Sonic Boom
+	qboolean	claw;				//Dillon's Claw
 
 	//Persistant Data for Underquake Abilities
 	int max_dashes;

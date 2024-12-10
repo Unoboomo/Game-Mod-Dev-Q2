@@ -466,7 +466,9 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 			gi.dprintf("critical hit\n");
 			float crit_multiplier = attacker->client->pers.crit_multiplier;
 			//Crit multipliers modifiers here:
-
+			if (attacker->client->pers.claw == true) {
+				crit_multiplier *= 1.25;
+			}
 			//Apply crit multipliers
 			damage *= crit_multiplier;
 		}
