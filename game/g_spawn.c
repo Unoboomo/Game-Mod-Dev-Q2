@@ -663,7 +663,12 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 
 			//swap weapons for relics
 			if (item_flags & IT_WEAPON) {
-				
+				if ((int)(random() * 3)) {
+					gi.dprintf("Nope\n");
+					G_FreeEdict(ent);
+					inhibit++;
+					continue;
+				}
 				//get a random index between the start and end of the relic section inclusive
 				rand_index = random() * relic_list_length;
 
