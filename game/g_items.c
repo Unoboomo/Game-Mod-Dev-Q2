@@ -366,6 +366,12 @@ qboolean Pickup_Second_Chance(edict_t* ent, edict_t* other)
 	return true;
 }
 
+qboolean Pickup_Master_Pickaxe(edict_t* ent, edict_t* other)
+{
+	other->client->pers.master_pickaxe = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
 qboolean Pickup_Hot_Cross_Bun(edict_t* ent, edict_t* other)
 {
 
@@ -2251,8 +2257,31 @@ increased damage at lower health
 				0,
 				/* precache */ ""
 	},
-/*UnderQuake item_second_chance (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-increased damage at lower health
+/*UnderQuake item_master_pickaxe (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+At max health, when pickaxe is swung, also fires a nerfed bfg projectile
+*/
+	{
+		"item_master_pickaxe",
+		Pickup_Master_Pickaxe,
+		Use_Relic,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Master Pickaxe",
+		/* width */		2,
+				0,
+				NULL,
+				IT_RELIC,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+/*UnderQuake item_hot_cross_bun (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+increased max hp by 1
 */
 	{
 		"item_hot_cross_bun",
@@ -2264,7 +2293,7 @@ increased damage at lower health
 		"models/items/c_head/tris.md2", EF_ROTATE,
 		NULL,
 		/* icon */		"i_fixme",
-		/* pickup */	"Hot-Cross Bun",
+		/* pickup */	"Hot Cross Bun",
 		/* width */		2,
 				0,
 				NULL,

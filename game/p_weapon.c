@@ -807,78 +807,6 @@ void Weapon_RocketLauncher (edict_t *ent)
 /*
 ======================================================================
 
-PICKAXE (SWORD)
-
-New Fire for blaster item (so i dont need to find all the spots where it is required, etc. change behavior)
-
-Adapted From:
-Patrick Wagstrom(Pridkett), www.web.archive.org/web/20051227025942///www.planetquake.com/qdevels/quake2/5_1_98.html
-Dan Eisner (DanE), www.web.archive.org/web/20051227030437/www.planetquake.com/qdevels/quake2/16_1_98.html
-12/1/24
-======================================================================
-*/
-void Pickaxe_Fire(edict_t* ent, vec3_t g_offset, int damage)
-{
-	vec3_t	forward, right;
-	vec3_t	start;
-	vec3_t	offset;
-
-	// MAGIC NUMBERS!!!!!
-	const int Pickaxe_Knockback = 200;
-
-	if (is_quad)
-		damage *= 4;
-	AngleVectors(ent->client->v_angle, forward, right, NULL);
-	VectorSet(offset, 24, 8, ent->viewheight - 8);
-	VectorAdd(offset, g_offset, offset);
-	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
-
-	VectorScale(forward, -2, ent->client->kick_origin);
-	ent->client->kick_angles[0] = -1;
-
-	fire_pickaxe(ent, start, forward, damage, Pickaxe_Knockback);
-}
-
-void Weapon_Pickaxe_Fire(edict_t* ent)
-{
-	int		damage;
-
-	// MAGIC NUMBERS!!!!!
-	const int Pickaxe_Normal_Damage = 30;
-	const int Pickaxe_DM_Damage = 45;
-
-	if (deathmatch->value)
-		damage = Pickaxe_DM_Damage;
-	else
-		damage = Pickaxe_Normal_Damage;
-	Pickaxe_Fire(ent, vec3_origin, damage);
-	ent->client->ps.gunframe++;
-}
-
-void Weapon_Pickaxe(edict_t* ent)
-{
-	// Adding a check to see if the pickaxe has been thrown, if so, return
-	if (Is_Thrown()) {
-		return;
-	}
-
-	static int	pause_frames[] = { 19, 32, 0 };
-	static int	fire_frames[] = { 5, 0 };
-	int n = 9;
-	/* Fire Rate(Swings per second) = 10 / (n - 3)
-	* n = 9 -> fire rate = 1.666... swings per second
-	* n = 8 -> fire rate = 2 swings per second
-	* going from n = 9 -> n = 8 is a 20% fire rate boost
-	*/
-	if (ent->client->pers.gloved == true) {
-		n = 8;
-	}
-	Weapon_Generic(ent, 4, n, 52, 55, pause_frames, fire_frames, Weapon_Pickaxe_Fire);
-}
-
-/*
-======================================================================
-
 BLASTER / HYPERBLASTER
 
 ======================================================================
@@ -1483,7 +1411,7 @@ void weapon_bfg_fire (edict_t *ent)
 
 	VectorSet(offset, 8, 8, ent->viewheight-8);
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
-	fire_bfg (ent, start, forward, damage, 400, damage_radius);
+	fire_bfg (ent, start, forward, damage, 400, damage_radius, false);
 
 	ent->client->ps.gunframe++;
 
@@ -1501,5 +1429,81 @@ void Weapon_BFG (edict_t *ent)
 	Weapon_Generic (ent, 8, 32, 55, 58, pause_frames, fire_frames, weapon_bfg_fire);
 }
 
+/*
+======================================================================
+
+PICKAXE (SWORD)
+
+New Fire for blaster item (so i dont need to find all the spots where it is required, etc. change behavior)
+
+Adapted From:
+Patrick Wagstrom(Pridkett), www.web.archive.org/web/20051227025942///www.planetquake.com/qdevels/quake2/5_1_98.html
+Dan Eisner (DanE), www.web.archive.org/web/20051227030437/www.planetquake.com/qdevels/quake2/16_1_98.html
+12/1/24
+======================================================================
+*/
+void Pickaxe_Fire(edict_t* ent, vec3_t g_offset, int damage)
+{
+	vec3_t	forward, right;
+	vec3_t	start;
+	vec3_t	offset;
+
+	// MAGIC NUMBERS!!!!!
+	const int Pickaxe_Knockback = 200;
+
+	if (is_quad)
+		damage *= 4;
+	AngleVectors(ent->client->v_angle, forward, right, NULL);
+	VectorSet(offset, 24, 8, ent->viewheight - 8);
+	VectorAdd(offset, g_offset, offset);
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
+
+	VectorScale(forward, -2, ent->client->kick_origin);
+	ent->client->kick_angles[0] = -1;
+
+	fire_pickaxe(ent, start, forward, damage, Pickaxe_Knockback);
+	if (ent->client->pers.master_pickaxe == true) {
+		if (ent->health == ent->max_health) {
+			fire_bfg(ent, start, forward, damage, 1000, 120, true);
+		}
+	}
+}
+
+void Weapon_Pickaxe_Fire(edict_t* ent)
+{
+	int		damage;
+
+	// MAGIC NUMBERS!!!!!
+	const int Pickaxe_Normal_Damage = 30;
+	const int Pickaxe_DM_Damage = 45;
+
+	if (deathmatch->value)
+		damage = Pickaxe_DM_Damage;
+	else
+		damage = Pickaxe_Normal_Damage;
+	Pickaxe_Fire(ent, vec3_origin, damage);
+	ent->client->ps.gunframe++;
+}
+
+void Weapon_Pickaxe(edict_t* ent)
+{
+	// Adding a check to see if the pickaxe has been thrown, if so, return
+	if (Is_Thrown()) {
+		return;
+	}
+
+	static int	pause_frames[] = { 19, 32, 0 };
+	static int	fire_frames[] = { 5, 0 };
+	int n = 9;
+	/* Fire Rate(Swings per second) = 10 / (n - 3)
+	* n = 9 -> fire rate = 1.666... swings per second
+	* n = 8 -> fire rate = 2 swings per second
+	* going from n = 9 -> n = 8 is a 20% fire rate boost
+	*/
+	if (ent->client->pers.gloved == true) {
+		n = 8;
+	}
+	Weapon_Generic(ent, 4, n, 52, 55, pause_frames, fire_frames, Weapon_Pickaxe_Fire);
+}
 
 //======================================================================

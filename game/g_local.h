@@ -739,7 +739,7 @@ void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int s
 void fire_grenade2 (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed, float timer, float damage_radius, qboolean held);
 void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, int radius_damage);
 void fire_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick);
-void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius);
+void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, qboolean pickaxe);
 
 // declare fire pickaxe
 void fire_pickaxe(edict_t* self, vec3_t start, vec3_t aimdir, int damage, int kick);
@@ -880,6 +880,7 @@ typedef struct
 	qboolean	gloved;
 	qboolean	berserk;
 	int			second_chance;
+	qboolean	master_pickaxe;
 
 	//Persistant Data for Underquake Abilities
 	int max_dashes;

@@ -778,8 +778,8 @@ void bfg_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf
 
 	// core explosion - prevents firing it into the wall/floor
 	if (other->takedamage)
-		T_Damage (other, self, self->owner, self->velocity, self->s.origin, plane->normal, 200, 0, 0, MOD_BFG_BLAST);
-	T_RadiusDamage(self, self->owner, 200, other, 100, MOD_BFG_BLAST);
+		T_Damage (other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 0, 0, MOD_BFG_BLAST);
+	T_RadiusDamage(self, self->owner, self->dmg, other, 100, MOD_BFG_BLAST);
 
 	gi.sound (self, CHAN_VOICE, gi.soundindex ("weapons/bfg__x1b.wav"), 1, ATTN_NORM, 0);
 	self->solid = SOLID_NOT;
@@ -879,7 +879,7 @@ void bfg_think (edict_t *self)
 }
 
 
-void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius)
+void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, qboolean pickaxe)
 {
 	edict_t	*bfg;
 
@@ -897,15 +897,20 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 	bfg->s.modelindex = gi.modelindex ("sprites/s_bfg1.sp2");
 	bfg->owner = self;
 	bfg->touch = bfg_touch;
-	bfg->nextthink = level.time + 8000/speed;
-	bfg->think = G_FreeEdict;
+	bfg->think = bfg_think;
+	bfg->nextthink = level.time + FRAMETIME;
+	bfg->dmg = 200;
 	bfg->radius_dmg = damage;
 	bfg->dmg_radius = damage_radius;
 	bfg->classname = "bfg blast";
 	bfg->s.sound = gi.soundindex ("weapons/bfg__l1a.wav");
+	if (pickaxe) {
+		bfg->dmg = damage;
+		bfg->nextthink = level.time + 8000 / speed;
+		bfg->think = G_FreeEdict;
 
-	bfg->think = bfg_think;
-	bfg->nextthink = level.time + FRAMETIME;
+	}
+
 	bfg->teammaster = bfg;
 	bfg->teamchain = NULL;
 
