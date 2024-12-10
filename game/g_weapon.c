@@ -1007,7 +1007,7 @@ void throw_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int spee
 	pickaxe->s.sound = gi.soundindex("misc/lasfly.wav");
 	pickaxe->owner = self;
 	pickaxe->touch = blaster_touch;
-	pickaxe->nextthink = level.time + 0.75;
+	pickaxe->nextthink = level.time + (float) 750 / speed;
 	pickaxe->think = G_FreeEdict;
 	pickaxe->dmg = damage;
 	pickaxe->classname = "pickaxe";

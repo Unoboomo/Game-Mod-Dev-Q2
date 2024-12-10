@@ -372,6 +372,14 @@ qboolean Pickup_Master_Pickaxe(edict_t* ent, edict_t* other)
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
+
+qboolean Pickup_Sonic_Boom(edict_t* ent, edict_t* other)
+{
+	other->client->pers.sonic = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
+
 qboolean Pickup_Hot_Cross_Bun(edict_t* ent, edict_t* other)
 {
 
@@ -2271,6 +2279,29 @@ At max health, when pickaxe is swung, also fires a nerfed bfg projectile
 		NULL,
 		/* icon */		"p_adrenaline",
 		/* pickup */	"Master Pickaxe",
+		/* width */		2,
+				0,
+				NULL,
+				IT_RELIC,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+/*UnderQuake item_sonic_boom (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+At max health, when pickaxe is swung, also fires a nerfed bfg projectile
+*/
+	{
+		"item_sonic_boom",
+		Pickup_Sonic_Boom,
+		Use_Relic,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Sonic Boom",
 		/* width */		2,
 				0,
 				NULL,

@@ -881,6 +881,7 @@ typedef struct
 	qboolean	berserk;
 	int			second_chance;
 	qboolean	master_pickaxe;
+	qboolean	sonic;
 
 	//Persistant Data for Underquake Abilities
 	int max_dashes;

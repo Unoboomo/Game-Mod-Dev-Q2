@@ -932,14 +932,24 @@ void Cmd_Throw_f(edict_t* ent)
 	vec3_t	start;
 	vec3_t	offset;
 	vec3_t	_distance;
-
+	int damage;
+	int		throw_speed;
 
 	if (Is_Thrown()) {
 		return;
 	}
 
 
-	int damage = 20;
+	damage = 20;
+	throw_speed = 1000;
+
+	//additive damage and speed changes
+
+	//multiplicative damage and speed changes
+	if (ent->client->pers.sonic) {
+		throw_speed *= 1.8;
+	}
+
 
 	if (ent->client->quad_framenum > level.framenum)
 		damage *= 4;
@@ -956,7 +966,7 @@ void Cmd_Throw_f(edict_t* ent)
 	VectorScale(forward, -2, ent->client->kick_origin);
 	ent->client->kick_angles[0] = -1;
 
-	throw_pickaxe(ent, start, forward, damage, 1000, false, EF_BLASTER);
+	throw_pickaxe(ent, start, forward, damage, throw_speed, false, EF_BLASTER);
 	gi.WriteByte(svc_muzzleflash);
 	gi.WriteShort(ent - g_edicts);
 	gi.WriteByte(MZ_BLASTER);
