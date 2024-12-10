@@ -877,9 +877,9 @@ typedef struct
 
 	//Persistant Data for UnderQuake Relics
 	qboolean	vampire;			//Vampirism
-	qboolean	gloved;				//Sturdy Gloves
-	qboolean	berserk;			//Berserker
-	int			second_chance;		//Second Chance
+	qboolean	hyper;				//Hyperstone
+	qboolean	berserk;			//Berserker's Pendant
+	int			resurrect;			//Resurrection
 	qboolean	master_pickaxe;		//Master Pickaxe
 	qboolean	sonic;				//Sonic Boom
 	qboolean	claw;				//Dillon's Claw

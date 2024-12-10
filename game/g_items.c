@@ -345,23 +345,23 @@ qboolean Pickup_Vampirism(edict_t* ent, edict_t* other)
 	return true;
 }
 
-qboolean Pickup_Sturdy_Gloves(edict_t* ent, edict_t* other)
+qboolean Pickup_Hyperstone(edict_t* ent, edict_t* other)
 {
-	other->client->pers.gloved = true;
+	other->client->pers.hyper = true;
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
 
-qboolean Pickup_Berserker(edict_t* ent, edict_t* other)
+qboolean Pickup_Berserkers_Pendant(edict_t* ent, edict_t* other)
 {
 	other->client->pers.berserk = true;
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
 
-qboolean Pickup_Second_Chance(edict_t* ent, edict_t* other)
+qboolean Pickup_Resurrection(edict_t* ent, edict_t* other)
 {
-	other->client->pers.second_chance = ITEM_INDEX(ent->item);
+	other->client->pers.resurrect = ITEM_INDEX(ent->item);
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
@@ -2209,12 +2209,12 @@ heals 5% of damage dealt
 				/* precache */ ""
 	},
 
-/*UnderQuake item_sturdy_gloves (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-increases fire rate by 20%
+/*UnderQuake item_hyperstone (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+increases swing speed by 50%
 */
 	{
-		"item_sturdy_gloves",
-		Pickup_Sturdy_Gloves,
+		"item_hyperstone",
+		Pickup_Hyperstone,
 		Use_Relic,
 		Drop_General,
 		NULL,
@@ -2222,7 +2222,7 @@ increases fire rate by 20%
 		"models/items/adrenal/tris.md2", EF_ROTATE,
 		NULL,
 		/* icon */		"p_adrenaline",
-		/* pickup */	"Sturdy Gloves",
+		/* pickup */	"Hyperstone",
 		/* width */		2,
 				0,
 				NULL,
@@ -2233,12 +2233,12 @@ increases fire rate by 20%
 				/* precache */ ""
 	},
 
-/*UnderQuake item_berserker (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+/*UnderQuake item_berserker's_pendant (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
 increased damage at lower health
 */
 	{
-		"item_berserker",
-		Pickup_Berserker,
+		"item_berserker's_pendant",
+		Pickup_Berserkers_Pendant,
 		Use_Relic,
 		Drop_General,
 		NULL,
@@ -2246,7 +2246,7 @@ increased damage at lower health
 		"models/items/adrenal/tris.md2", EF_ROTATE,
 		NULL,
 		/* icon */		"p_adrenaline",
-		/* pickup */	"Berserker",
+		/* pickup */	"Berserker's Pendant",
 		/* width */		2,
 				0,
 				NULL,
@@ -2256,12 +2256,12 @@ increased damage at lower health
 				0,
 				/* precache */ ""
 	},
-/*UnderQuake item_second_chance (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+/*UnderQuake item_resurrection (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
 increased damage at lower health
 */
 	{
-		"item_second_chance",
-		Pickup_Second_Chance,
+		"item_resurrection",
+		Pickup_Resurrection,
 		Use_Relic,
 		Drop_General,
 		NULL,
@@ -2269,7 +2269,7 @@ increased damage at lower health
 		"models/items/adrenal/tris.md2", EF_ROTATE,
 		NULL,
 		/* icon */		"p_adrenaline",
-		/* pickup */	"Second Chance",
+		/* pickup */	"Resurrection ",
 		/* width */		2,
 				0,
 				NULL,

@@ -1500,8 +1500,11 @@ void Weapon_Pickaxe(edict_t* ent)
 	* n = 8 -> fire rate = 2 swings per second
 	* going from n = 9 -> n = 8 is a 20% fire rate boost
 	*/
-	if (ent->client->pers.gloved == true) {
-		n = 8;
+	if (ent->client->pers.hyper == true) {
+		n = (10 / (10 / (float)(n - 3) * 1.5)) + 3;
+	}
+	if (n < 4) {
+		n = 4;
 	}
 	Weapon_Generic(ent, 4, n, 52, 55, pause_frames, fire_frames, Weapon_Pickaxe_Fire);
 }

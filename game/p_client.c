@@ -630,9 +630,9 @@ void InitClientPersistant (gclient_t *client)
 
 	//Initialize UnderQuake Persistent variables
 	client->pers.vampire = false;
-	client->pers.gloved = false;
+	client->pers.hyper = false;
 	client->pers.berserk = false;
-	client->pers.second_chance = -1;
+	client->pers.resurrect = -1;
 	client->pers.master_pickaxe = false;
 	client->pers.sonic = false;
 	client->pers.claw = false;

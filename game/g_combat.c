@@ -539,12 +539,12 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		targ->health = targ->health - take;
 		// Here for extra life
 		if (targ->health <= 0 && client) {
-			if (client->pers.second_chance != -1) {
-				if (client->pers.inventory[client->pers.second_chance]) {
-					client->pers.inventory[client->pers.second_chance]--;
+			if (client->pers.resurrect != -1) {
+				if (client->pers.inventory[client->pers.resurrect]) {
+					client->pers.inventory[client->pers.resurrect]--;
 					targ->health = targ->max_health * 0.2;
-					if (client->pers.inventory[client->pers.second_chance] == 0) {
-						client->pers.second_chance = -1;
+					if (client->pers.inventory[client->pers.resurrect] == 0) {
+						client->pers.resurrect = -1;
 					}
 				}
 			}
