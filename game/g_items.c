@@ -400,6 +400,14 @@ qboolean Pickup_Hoodies_Pillow(edict_t* ent, edict_t* other)
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
+
+qboolean Pickup_Large_Ember(edict_t* ent, edict_t* other)
+{
+	other->client->pers.ember = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
+
 qboolean Pickup_Hot_Cross_Bun(edict_t* ent, edict_t* other)
 {
 
@@ -2391,6 +2399,29 @@ Decreases damage taken by 25%
 		NULL,
 		/* icon */		"p_adrenaline",
 		/* pickup */	"Hoodie's Pillow",
+		/* width */		2,
+				0,
+				NULL,
+				IT_RELIC,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+	/*UnderQuake item_large_ember (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+	Causes nearby enemies to be inflicted with minor fire damage (1-3 per second)
+	*/
+	{
+		"item_large_ember",
+		Pickup_Large_Ember,
+		Use_Relic,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Large Ember",
 		/* width */		2,
 				0,
 				NULL,

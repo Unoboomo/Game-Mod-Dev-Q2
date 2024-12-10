@@ -569,10 +569,10 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 
 	if (targ->svflags & SVF_MONSTER)
 	{
-		M_ReactToDamage (targ, attacker);
+		M_ReactToDamage(targ, attacker);
 		if (!(targ->monsterinfo.aiflags & AI_DUCKED) && (take))
 		{
-			targ->pain (targ, attacker, knockback, take);
+			targ->pain(targ, attacker, knockback, take);
 			// nightmare mode monsters don't go into pain frames often
 			if (skill->value == 3)
 				targ->pain_debounce_time = level.time + 5;
@@ -586,7 +586,8 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	else if (take)
 	{
 		if (targ->pain)
-			targ->pain (targ, attacker, knockback, take);
+			targ->pain(targ, attacker, knockback, take);
+
 	}
 
 	// add to the damage inflicted on a player this frame
@@ -635,6 +636,33 @@ void T_RadiusDamage (edict_t *inflictor, edict_t *attacker, float damage, edict_
 				VectorSubtract (ent->s.origin, inflictor->s.origin, dir);
 				T_Damage (ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, (int)points, (int)points, DAMAGE_RADIUS, mod);
 			}
+		}
+	}
+}
+
+/*
+============
+T_RadiusDamage
+============
+*/
+void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radius, int mod) 
+{
+	float	points;
+	edict_t* ent = NULL;
+	vec3_t	v;
+	vec3_t	dir;
+
+	while ((ent = findradius(ent, inflictor->s.origin, radius)) != NULL)
+	{
+		if (ent == inflictor || ent == attacker)
+			continue;
+		if (!ent->takedamage)
+			continue;
+
+		if (CanDamage(ent, inflictor))
+		{
+			VectorSubtract(ent->s.origin, inflictor->s.origin, dir);
+			T_Damage(ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, damage, damage, DAMAGE_RADIUS, mod);
 		}
 	}
 }

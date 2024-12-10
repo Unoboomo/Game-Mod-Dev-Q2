@@ -638,6 +638,7 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.claw = false;
 	client->pers.fang = false;
 	client->pers.pillow = false;
+	client->pers.ember = false;
 
 
 	client->pers.max_dashes = 1;
@@ -1772,9 +1773,9 @@ This will be called once for each server frame, before running
 any other entities in the world.
 ==============
 */
-void ClientBeginServerFrame (edict_t *ent)
+void ClientBeginServerFrame(edict_t* ent)
 {
-	gclient_t	*client;
+	gclient_t* client;
 	int			buttonMask;
 
 	if (level.intermissiontime)
@@ -1791,6 +1792,15 @@ void ClientBeginServerFrame (edict_t *ent)
 			client->last_dash_recharge = level.time;
 		}
 	}
+
+	//Large Ember DOT to surrounding enemies
+	if (client->pers.ember) {
+		if ((int)(level.time * 10) % 10 == 0) {
+			T_AreaDamage(ent, ent, (int)(random() * 3) + 1, 300, MOD_UNKNOWN);
+			gi.dprintf("here\n");
+		}
+	}
+
 	if (deathmatch->value &&
 		client->pers.spectator != client->resp.spectator &&
 		(level.time - client->respawn_time) >= 5) {

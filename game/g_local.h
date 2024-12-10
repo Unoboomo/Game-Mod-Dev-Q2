@@ -670,6 +670,7 @@ void T_RadiusDamage (edict_t *inflictor, edict_t *attacker, float damage, edict_
 #define DAMAGE_NO_KNOCKBACK		0x00000008	// do not affect velocity, just view angles
 #define DAMAGE_BULLET			0x00000010  // damage is from a bullet (used for ricochets)
 #define DAMAGE_NO_PROTECTION	0x00000020  // armor, shields, invulnerability, and godmode have no effect
+#define DAMAGE_NO_REACTION		0x00000040 // Enemies do not react to this damage
 
 #define DEFAULT_BULLET_HSPREAD	300
 #define DEFAULT_BULLET_VSPREAD	500
@@ -885,6 +886,7 @@ typedef struct
 	qboolean	claw;				//Dillon's Claw
 	qboolean	fang;				//Shadow's Fang
 	qboolean	pillow;				//Hoodie's Pillow
+	qboolean	ember;				//Large Ember
 
 
 	//Persistant Data for Underquake Abilities
@@ -1167,5 +1169,8 @@ void Dash(edict_t* ent, int dash_power);
 * @return Returns a list of lowest and highest index of item of type FLAG
 */
 void Item_List_Bounds(int FLAG, int bounds[]);
+
+//Its RadiusDamage, but it doesnt care about distance from the inflictor
+void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radius, int mod);
 
 #define MAX_RELICS	20
