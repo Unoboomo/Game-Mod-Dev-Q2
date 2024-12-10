@@ -394,6 +394,12 @@ qboolean Pickup_Shadows_Fang(edict_t * ent, edict_t * other)
 	return true;
 }
 
+qboolean Pickup_Hoodies_Pillow(edict_t* ent, edict_t* other)
+{
+	other->client->pers.pillow = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
 qboolean Pickup_Hot_Cross_Bun(edict_t* ent, edict_t* other)
 {
 
@@ -2303,7 +2309,7 @@ At max health, when pickaxe is swung, also fires a nerfed bfg projectile
 				/* precache */ ""
 	},
 /*UnderQuake item_sonic_boom (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-At max health, when pickaxe is swung, also fires a nerfed bfg projectile
+Increases thrown pickaxe speed by 80%
 */
 	{
 		"item_sonic_boom",
@@ -2362,6 +2368,29 @@ At max health, when pickaxe is swung, also fires a nerfed bfg projectile
 		NULL,
 		/* icon */		"p_adrenaline",
 		/* pickup */	"Shadow's Fang",
+		/* width */		2,
+				0,
+				NULL,
+				IT_RELIC,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+/*UnderQuake item_hoodie's_pillow (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Decreases damage taken by 25%
+*/
+	{
+		"item_hoodie's_pillow",
+		Pickup_Hoodies_Pillow,
+		Use_Relic,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Hoodie's Pillow",
 		/* width */		2,
 				0,
 				NULL,

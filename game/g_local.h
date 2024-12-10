@@ -884,6 +884,7 @@ typedef struct
 	qboolean	sonic;				//Sonic Boom
 	qboolean	claw;				//Dillon's Claw
 	qboolean	fang;				//Shadow's Fang
+	qboolean	pillow;				//Hoodie's Pillow
 
 
 	//Persistant Data for Underquake Abilities

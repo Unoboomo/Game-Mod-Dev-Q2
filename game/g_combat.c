@@ -514,6 +514,15 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		}
 	}
 
+	if (client) {
+		if (client->pers.pillow) {
+			take *= 0.75;
+			if (!take) {
+				take = 1;
+			}
+		}
+	}
+
 	psave = CheckPowerArmor (targ, point, normal, take, dflags);
 	take -= psave;
 

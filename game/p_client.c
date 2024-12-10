@@ -637,6 +637,7 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.sonic = false;
 	client->pers.claw = false;
 	client->pers.fang = false;
+	client->pers.pillow = false;
 
 
 	client->pers.max_dashes = 1;
