@@ -242,7 +242,25 @@ void Cmd_Give_f (edict_t *ent)
 		if (!give_all)
 			return;
 	}
+	if (give_all || Q_stricmp(name, "Relics") == 0)
+	{
+		for (i = 0; i < game.num_items; i++)
+		{
+			it = itemlist + i;
+			if (!it->pickup)
+				continue;
+			if (it->flags & (IT_RELIC)) {
+				it_ent = G_Spawn();
+				it_ent->classname = it->classname;
+				SpawnItem(it_ent, it);
+				Touch_Item(it_ent, ent, NULL, NULL);
+				if (it_ent->inuse)
+					G_FreeEdict(it_ent);
+			}
 
+		}
+		return;
+	}
 	if (give_all)
 	{
 		for (i=0 ; i<game.num_items ; i++)
@@ -250,7 +268,7 @@ void Cmd_Give_f (edict_t *ent)
 			it = itemlist + i;
 			if (!it->pickup)
 				continue;
-			if (it->flags & (IT_ARMOR|IT_WEAPON|IT_AMMO))
+			if (it->flags & (IT_ARMOR|IT_WEAPON|IT_AMMO|IT_RELIC))
 				continue;
 			ent->client->pers.inventory[i] = 1;
 		}

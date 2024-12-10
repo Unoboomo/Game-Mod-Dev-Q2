@@ -672,20 +672,21 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 
 				if (relic_list[rand_index] == 0) {	//no more relics
 					gi.dprintf("no more relics\n");
-					G_FreeEdict(ent);
-					inhibit++;
-					continue;
+					ent->classname = "item_hot_cross_bun";
+					gi.dprintf("changed classname to %s\n", "item_hot_cross_bun");
 				}
-				//change classname of entity to relic classname
-				item = GetItemByIndex(relic_list[rand_index]);
-				ent->classname = item->classname;
-				gi.dprintf("changed classname to %s\n", item->classname);
+				else {
+					//change classname of entity to relic classname
+					item = GetItemByIndex(relic_list[rand_index]);
+					ent->classname = item->classname;
+					gi.dprintf("changed classname to %s\n", item->classname);
 
-				//remove index of spawned item from list, so to not have duplicates
-				for (i = rand_index; i < MAX_RELICS - 1; i++) {
-					relic_list[i] = relic_list[i + 1];
+					//remove index of spawned item from list, so to not have duplicates
+					for (i = rand_index; i < MAX_RELICS - 1; i++) {
+						relic_list[i] = relic_list[i + 1];
+					}
+					relic_list_length--;
 				}
-				relic_list_length--;
 			}
 		}
 		

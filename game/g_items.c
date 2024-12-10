@@ -365,6 +365,16 @@ qboolean Pickup_Second_Chance(edict_t* ent, edict_t* other)
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
+
+qboolean Pickup_Hot_Cross_Bun(edict_t* ent, edict_t* other)
+{
+
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	other->max_health += 1;
+	if (other->health < other->max_health)
+		other->health = other->max_health;
+	return true;
+}
 //======================================================================
 
 void Use_Quad (edict_t *ent, gitem_t *item)
@@ -450,6 +460,11 @@ void	Use_Silencer (edict_t *ent, gitem_t *item)
 
 //======================================================================
 
+//Use Relic
+void	Use_Relic(edict_t* ent, gitem_t* item) {
+
+	ValidateSelectedItem(ent);
+}
 qboolean Pickup_Key (edict_t *ent, edict_t *other)
 {
 	if (coop->value)
@@ -2148,7 +2163,7 @@ heals 5% of damage dealt
 	{
 		"item_vampirism",
 		Pickup_Vampirism,
-		NULL,
+		Use_Relic,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2172,7 +2187,7 @@ increases fire rate by 20%
 	{
 		"item_sturdy_gloves",
 		Pickup_Sturdy_Gloves,
-		NULL,
+		Use_Relic,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2196,7 +2211,7 @@ increased damage at lower health
 	{
 		"item_berserker",
 		Pickup_Berserker,
-		NULL,
+		Use_Relic,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2219,7 +2234,7 @@ increased damage at lower health
 	{
 		"item_second_chance",
 		Pickup_Second_Chance,
-		NULL,
+		Use_Relic,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2231,6 +2246,29 @@ increased damage at lower health
 				0,
 				NULL,
 				IT_RELIC,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+/*UnderQuake item_second_chance (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+increased damage at lower health
+*/
+	{
+		"item_hot_cross_bun",
+		Pickup_Hot_Cross_Bun,
+		NULL,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/c_head/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"i_fixme",
+		/* pickup */	"Hot-Cross Bun",
+		/* width */		2,
+				0,
+				NULL,
+				0,
 				0,
 				NULL,
 				0,
