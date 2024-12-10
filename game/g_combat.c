@@ -460,7 +460,9 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	if (attacker->client) {
 		float crit_chance = attacker->client->pers.crit_chance;
 		//Crit modifiers here:
-
+		if (attacker->client->pers.fang == true) {
+			crit_chance *= 1.5;
+		}
 		//Is it a crit?
 		if (random() < crit_chance) {
 			gi.dprintf("critical hit\n");

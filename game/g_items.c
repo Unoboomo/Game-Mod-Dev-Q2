@@ -387,6 +387,13 @@ qboolean Pickup_Dillons_Claw(edict_t * ent, edict_t * other)
 	return true;
 }
 
+qboolean Pickup_Shadows_Fang(edict_t * ent, edict_t * other)
+{
+	other->client->pers.fang = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
+
 qboolean Pickup_Hot_Cross_Bun(edict_t* ent, edict_t* other)
 {
 
@@ -2332,6 +2339,29 @@ At max health, when pickaxe is swung, also fires a nerfed bfg projectile
 		NULL,
 		/* icon */		"p_adrenaline",
 		/* pickup */	"Dillon's Claw",
+		/* width */		2,
+				0,
+				NULL,
+				IT_RELIC,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+	/*UnderQuake item_shadow's_fang (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+	Increases Crit chance by 150% multiplicatively
+	*/
+	{
+		"item_shadow's_fang",
+		Pickup_Shadows_Fang,
+		Use_Relic,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Shadow's Fang",
 		/* width */		2,
 				0,
 				NULL,

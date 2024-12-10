@@ -883,6 +883,8 @@ typedef struct
 	qboolean	master_pickaxe;		//Master Pickaxe
 	qboolean	sonic;				//Sonic Boom
 	qboolean	claw;				//Dillon's Claw
+	qboolean	fang;				//Shadow's Fang
+
 
 	//Persistant Data for Underquake Abilities
 	int max_dashes;
