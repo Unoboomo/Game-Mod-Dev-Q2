@@ -887,6 +887,10 @@ typedef struct
 	int max_dashes;
 	float dash_recharge_time;
 
+	//Crit System
+	float crit_multiplier;
+	float crit_chance;
+
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns

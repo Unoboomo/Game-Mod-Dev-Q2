@@ -448,10 +448,27 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	}
 	// UnderQuake Damage Modifiers
 
+	
 	//Berserker
 	if (attacker->client) {
 		if (attacker->client->pers.berserk) {
 			damage *= (1 - ((float) (attacker->health - attacker->max_health)) / (float) 120);
+		}
+	}
+
+	//Crits
+	if (attacker->client) {
+		float crit_chance = attacker->client->pers.crit_chance;
+		//Crit modifiers here:
+
+		//Is it a crit?
+		if (random() < crit_chance) {
+			gi.dprintf("critical hit\n");
+			float crit_multiplier = attacker->client->pers.crit_multiplier;
+			//Crit multipliers modifiers here:
+
+			//Apply crit multipliers
+			damage *= crit_multiplier;
 		}
 	}
 	take = damage;
