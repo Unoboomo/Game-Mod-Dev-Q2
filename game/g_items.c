@@ -2339,8 +2339,8 @@ Increases thrown pickaxe speed by 80%
 				0,
 				/* precache */ ""
 	},
-	/*UnderQuake item_dillon's_claw (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-	Increases Crit multiplier by 125% multiplicatively
+/*UnderQuake item_dillon's_claw (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Increases Crit multiplier by 125% multiplicatively
 	*/
 	{
 		"item_dillon's_claw",
@@ -2362,8 +2362,8 @@ Increases thrown pickaxe speed by 80%
 				0,
 				/* precache */ ""
 	},
-	/*UnderQuake item_shadow's_fang (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-	Increases Crit chance by 150% multiplicatively
+/*UnderQuake item_shadow's_fang (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Increases Crit chance by 150% multiplicatively
 	*/
 	{
 		"item_shadow's_fang",
@@ -2408,8 +2408,8 @@ Decreases damage taken by 25%
 				0,
 				/* precache */ ""
 	},
-	/*UnderQuake item_large_ember (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-	Causes nearby enemies to be inflicted with minor fire damage (1-3 per second)
+/*UnderQuake item_large_ember (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Causes nearby enemies to be inflicted with minor fire damage (1-3 per second)
 	*/
 	{
 		"item_large_ember",

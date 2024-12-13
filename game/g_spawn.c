@@ -553,6 +553,9 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 	gi.dprintf("%d, %d are the bounds\n", relic_bounds[0],relic_bounds[1]);
 
 	relic_list_length = 0;
+	for (i = 0; i < MAX_RELICS; i++) {
+		relic_list[i] = 0;
+	}
 	for (i = 0; i <= (relic_bounds[1] - relic_bounds[0]); i++) {
 		relic_list[i] = relic_bounds[0] + i;
 		relic_list_length++;

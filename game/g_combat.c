@@ -642,7 +642,7 @@ void T_RadiusDamage (edict_t *inflictor, edict_t *attacker, float damage, edict_
 
 /*
 ============
-T_RadiusDamage
+T_AreaDamage
 ============
 */
 void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radius, int mod) 
