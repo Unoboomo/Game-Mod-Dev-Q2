@@ -461,14 +461,23 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	}
 
 	//Crits
-	if (client_atk) {
+	if (client_atk && !(dflags & DAMAGE_AREA)) { //crits cannot be done by area damage attacks
 		float crit_chance = client_atk->pers.crit_chance;
+
 		//Crit modifiers here:
 		if (client_atk->pers.fang == true) {
 			crit_chance *= 1.5;
 		}
+
+		//Crit Gauge ability upgrade
+		if (client_atk->pers.crit_gauge) {
+			client_atk->crit_gauge++;
+			if (client_atk->crit_gauge >= FULL_CRIT_GAUGE) {
+				client_atk->crit_gauge_full = true;
+			}
+		}
 		//Is it a crit?
-		if (random() < crit_chance) {
+		if (random() < crit_chance || client_atk->crit_next_attack) {
 			gi.dprintf("critical hit\n");
 			float crit_multiplier = client_atk->pers.crit_multiplier;
 			//Crit multipliers modifiers here:
@@ -477,6 +486,12 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 			}
 			//Apply crit multipliers
 			damage *= crit_multiplier;
+			//If the crit was caused by a guarenteed crit from a full crit gauge, empty the crit gauge
+			if (client_atk->crit_next_attack) {
+				client_atk->crit_next_attack = false;
+				client_atk->crit_gauge_full = false;
+				client_atk->crit_gauge = 0;
+			}
 		}
 	}
 
@@ -593,7 +608,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		if (!(targ->monsterinfo.aiflags & AI_DUCKED) && (take))
 		{
 			//if damage is from an areaDamage attack, dont go into pain frames
-			if (!(dflags & DAMAGE_NO_REACTION)) {
+			if (!(dflags & DAMAGE_AREA)) {
 				targ->pain(targ, attacker, knockback, take); 
 			}
 			// nightmare mode monsters don't go into pain frames often
@@ -685,7 +700,7 @@ void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radiu
 		if (CanDamage(ent, inflictor))
 		{
 			VectorSubtract(ent->s.origin, inflictor->s.origin, dir);
-			T_Damage(ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, damage, damage, DAMAGE_RADIUS|DAMAGE_NO_REACTION, mod);
+			T_Damage(ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, damage, damage, DAMAGE_RADIUS|DAMAGE_AREA, mod);
 		}
 	}
 }

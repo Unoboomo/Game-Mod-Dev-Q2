@@ -996,6 +996,30 @@ void Cmd_Dash_f(edict_t* ent)
 }
 
 /*
+==================
+Cmd_Crit_Next_f
+
+Crit Gauge Ability, causes the next hit to crit
+
+command word = "crit_next"
+==================
+*/
+void Cmd_Crit_Next_f(edict_t* ent)
+{
+	if (ent->client->pers.crit_gauge) {
+		if (ent->client->crit_gauge_full) {
+			ent->client->crit_next_attack = true;
+		}
+		else {
+			gi.dprintf("Crit Gauge at %d out of %d\n", ent->client->crit_gauge,FULL_CRIT_GAUGE);
+		}
+	}
+	else {
+		gi.dprintf("Crit Gauge Not Unlocked Yet\n");
+	}
+}
+
+/*
 =================
 ClientCommand
 =================
@@ -1086,6 +1110,8 @@ void ClientCommand (edict_t *ent)
 		Cmd_Throw_f(ent);
 	else if (Q_stricmp(cmd, "dash") == 0)
 		Cmd_Dash_f(ent);
+	else if (Q_stricmp(cmd, "crit_next") == 0)
+		Cmd_Crit_Next_f(ent);
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
 }

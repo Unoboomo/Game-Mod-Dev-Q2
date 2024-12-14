@@ -520,6 +520,25 @@ void G_SetStats (edict_t *ent)
 		ent->client->ps.stats[STAT_HELPICON] = 0;
 
 	ent->client->ps.stats[STAT_SPECTATOR] = 0;
+
+	//
+	// Crit Gauge
+	//
+	if (ent->client->pers.crit_gauge) {
+		if (ent->client->crit_gauge_full && (level.framenum & 8)) {
+			if (ent->client->crit_next_attack) {
+				ent->client->ps.stats[STAT_CRIT_READY_STRING] = CS_GENERAL+1;
+
+			}
+			else {
+				ent->client->ps.stats[STAT_CRIT_READY_STRING] = CS_GENERAL;
+			}
+		}
+		else {
+			ent->client->ps.stats[STAT_CRIT_READY_STRING] = 0;
+
+		}
+	}
 }
 
 /*

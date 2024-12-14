@@ -337,7 +337,8 @@ qboolean Pickup_Pack (edict_t *ent, edict_t *other)
 	return true;
 }
 
-// UnderQuake pickups
+// UnderQuake Relic pickups
+
 qboolean Pickup_Vampirism(edict_t* ent, edict_t* other)
 {
 	other->client->pers.vampire = true;
@@ -415,6 +416,15 @@ qboolean Pickup_Hot_Cross_Bun(edict_t* ent, edict_t* other)
 	other->max_health += 1;
 	if (other->health < other->max_health)
 		other->health = other->max_health;
+	return true;
+}
+
+//UnderQuake Ability Upgrade Pickups
+
+qboolean Pickup_Crit_Gauge(edict_t* ent, edict_t* other)
+{
+	other->client->pers.crit_gauge = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
 //======================================================================
@@ -2454,7 +2464,29 @@ increased max hp by 1
 				0,
 				/* precache */ ""
 	},
-
+/*UnderQuake item_large_ember (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Causes nearby enemies to be inflicted with minor fire damage (1-3 per second)
+	*/
+	{
+		"item_crit_gauge",
+		Pickup_Crit_Gauge,
+		Use_Relic,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Crit Gauge",
+		/* width */		2,
+				0,
+				NULL,
+				IT_ABILITY_UPGRADE,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
 	// end of list marker
 	{NULL}
 };

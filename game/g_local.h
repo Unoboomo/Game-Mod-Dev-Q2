@@ -670,7 +670,7 @@ void T_RadiusDamage (edict_t *inflictor, edict_t *attacker, float damage, edict_
 #define DAMAGE_NO_KNOCKBACK		0x00000008	// do not affect velocity, just view angles
 #define DAMAGE_BULLET			0x00000010  // damage is from a bullet (used for ricochets)
 #define DAMAGE_NO_PROTECTION	0x00000020  // armor, shields, invulnerability, and godmode have no effect
-#define DAMAGE_NO_REACTION		0x00000040 // Enemies do not react to this damage
+#define DAMAGE_AREA				0x00000040 // Damage Caused by area damage, like Large Ember
 
 #define DEFAULT_BULLET_HSPREAD	300
 #define DEFAULT_BULLET_VSPREAD	500
@@ -890,12 +890,14 @@ typedef struct
 
 
 	//Persistant Data for Underquake Abilities
+	//Dash
 	int max_dashes;
 	float dash_recharge_time;
 
 	//Crit System
 	float crit_multiplier;
 	float crit_chance;
+	qboolean crit_gauge;
 
 } client_persistant_t;
 
@@ -998,6 +1000,10 @@ struct gclient_s
 	//UnderQuake Variables
 	int dashes;
 	float last_dash_recharge;
+
+	int crit_gauge;
+	qboolean crit_gauge_full;
+	qboolean crit_next_attack;
 };
 
 
@@ -1190,3 +1196,4 @@ void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radiu
 //UnderQuake Definitions
 
 #define MAX_RELICS	20
+#define FULL_CRIT_GAUGE 20

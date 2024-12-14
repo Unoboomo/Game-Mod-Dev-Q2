@@ -646,6 +646,7 @@ void InitClientPersistant (gclient_t *client)
 
 	client->pers.crit_multiplier = 1.5;
 	client->pers.crit_chance = 0.08;
+	client->pers.crit_gauge = false;
 
 
 }
@@ -1797,7 +1798,6 @@ void ClientBeginServerFrame(edict_t* ent)
 	if (client->pers.ember) {
 		if ((int)(level.time * 10) % 10 == 0) {
 			T_AreaDamage(ent, ent, (int)(random() * 3) + 1, 300, MOD_UNKNOWN);
-			gi.dprintf("here\n");
 		}
 	}
 

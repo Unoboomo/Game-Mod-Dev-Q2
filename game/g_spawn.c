@@ -788,6 +788,14 @@ char *single_statusbar =
 "	xv	148 "
 "	pic	11 "
 "endif "
+
+//	Crit Gauge
+"if 18 "				
+"	xv	200 "
+"	yb	-42 "		
+"	stat_string 18 "
+"	yb	-50 "		
+"endif "
 ;
 
 char *dm_statusbar =
@@ -1067,5 +1075,10 @@ void SP_worldspawn (edict_t *ent)
 
 	// 63 testing
 	gi.configstring(CS_LIGHTS+63, "a");
+
+	//Underquake Crit Strings
+	gi.configstring(CS_GENERAL, "CRIT READY");
+	gi.configstring(CS_GENERAL+1, "CRIT!!!");
+
 }
 
