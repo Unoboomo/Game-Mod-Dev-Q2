@@ -724,6 +724,9 @@ void bfg_explode (edict_t *self)
 	float	points;
 	vec3_t	v;
 	float	dist;
+	int		dflags;
+
+	dflags = DAMAGE_ENERGY;
 
 	if (self->s.frame == 0)
 	{
@@ -752,7 +755,10 @@ void bfg_explode (edict_t *self)
 			gi.WriteByte (TE_BFG_EXPLOSION);
 			gi.WritePosition (ent->s.origin);
 			gi.multicast (ent->s.origin, MULTICAST_PHS);
-			T_Damage (ent, self, self->owner, self->velocity, ent->s.origin, vec3_origin, (int)points, 0, DAMAGE_ENERGY, MOD_BFG_EFFECT);
+			if (!strcmp(self->classname, "pickaxe beam")) {
+				dflags = DAMAGE_SWUNG_PICKAXE;
+			}
+			T_Damage (ent, self, self->owner, self->velocity, ent->s.origin, vec3_origin, (int)points, 0, dflags, MOD_BFG_EFFECT);
 		}
 	}
 
@@ -879,7 +885,7 @@ void bfg_think (edict_t *self)
 }
 
 
-void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, qboolean pickaxe)
+void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius)
 {
 	edict_t	*bfg;
 
@@ -904,12 +910,7 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 	bfg->dmg_radius = damage_radius;
 	bfg->classname = "bfg blast";
 	bfg->s.sound = gi.soundindex ("weapons/bfg__l1a.wav");
-	if (pickaxe) {
-		bfg->dmg = damage;
-		bfg->nextthink = level.time + 8000 / speed;
-		bfg->think = G_FreeEdict;
 
-	}
 
 	bfg->teammaster = bfg;
 	bfg->teamchain = NULL;
@@ -963,7 +964,7 @@ void fire_pickaxe(edict_t* self, vec3_t start, vec3_t aimdir, int damage, int ki
 		{
 			if (tr.ent->takedamage) //if thing can take damage, damage it
 			{
-				T_Damage(tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, DAMAGE_ENERGY, mod);
+				T_Damage(tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, DAMAGE_SWUNG_PICKAXE, mod);
 			}
 			else
 			{
@@ -989,6 +990,80 @@ void fire_pickaxe(edict_t* self, vec3_t start, vec3_t aimdir, int damage, int ki
 	return;
 }
 
+// Master Pickaxe Projectile
+
+void pickaxe_beam_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf)
+{
+	if (other == self->owner)
+		return;
+
+	if (surf && (surf->flags & SURF_SKY))
+	{
+		G_FreeEdict(self);
+		return;
+	}
+
+	if (self->owner->client)
+		PlayerNoise(self->owner, self->s.origin, PNOISE_IMPACT);
+
+	// core explosion - prevents firing it into the wall/floor
+	if (other->takedamage)
+		T_Damage(other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 0, DAMAGE_SWUNG_PICKAXE, MOD_BFG_BLAST);
+	T_RadiusDamage(self, self->owner, self->dmg, other, 100, MOD_BFG_BLAST);
+
+	gi.sound(self, CHAN_VOICE, gi.soundindex("weapons/bfg__x1b.wav"), 1, ATTN_NORM, 0);
+	self->solid = SOLID_NOT;
+	self->touch = NULL;
+	VectorMA(self->s.origin, -1 * FRAMETIME, self->velocity, self->s.origin);
+	VectorClear(self->velocity);
+	self->s.modelindex = gi.modelindex("sprites/s_bfg3.sp2");
+	self->s.frame = 0;
+	self->s.sound = 0;
+	self->s.effects &= ~EF_ANIM_ALLFAST;
+	self->think = bfg_explode;
+	self->nextthink = level.time + FRAMETIME;
+	self->enemy = other;
+
+	gi.WriteByte(svc_temp_entity);
+	gi.WriteByte(TE_BFG_BIGEXPLOSION);
+	gi.WritePosition(self->s.origin);
+	gi.multicast(self->s.origin, MULTICAST_PVS);
+}
+
+void fire_master_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius)
+{
+	edict_t* pickaxe_beam;
+
+	pickaxe_beam = G_Spawn();
+	VectorCopy(start, pickaxe_beam->s.origin);
+	VectorCopy(dir, pickaxe_beam->movedir);
+	vectoangles(dir, pickaxe_beam->s.angles);
+	VectorScale(dir, speed, pickaxe_beam->velocity);
+	pickaxe_beam->movetype = MOVETYPE_FLYMISSILE;
+	pickaxe_beam->clipmask = MASK_SHOT;
+	pickaxe_beam->solid = SOLID_BBOX;
+	pickaxe_beam->s.effects |= EF_BFG | EF_ANIM_ALLFAST;
+	VectorClear(pickaxe_beam->mins);
+	VectorClear(pickaxe_beam->maxs);
+	pickaxe_beam->s.modelindex = gi.modelindex("sprites/s_bfg1.sp2");
+	pickaxe_beam->owner = self;
+	pickaxe_beam->touch = pickaxe_beam_touch;
+	pickaxe_beam->think = G_FreeEdict;
+	pickaxe_beam->nextthink = level.time + 8000 / speed;
+	pickaxe_beam->dmg = damage;
+	pickaxe_beam->radius_dmg = damage;
+	pickaxe_beam->dmg_radius = damage_radius;
+	pickaxe_beam->classname = "pickaxe beam";
+	pickaxe_beam->s.sound = gi.soundindex("weapons/bfg__l1a.wav");
+
+	pickaxe_beam->teammaster = pickaxe_beam;
+	pickaxe_beam->teamchain = NULL;
+
+	if (self->client)
+		check_dodge(self, pickaxe_beam->s.origin, dir, speed);
+
+	gi.linkentity(pickaxe_beam);
+}
 /*
 =================
 throw_pickaxe
@@ -1019,7 +1094,7 @@ void pickaxe_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* s
 			mod = MOD_HYPERBLASTER;
 		else
 			mod = MOD_BLASTER;
-		T_Damage(other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_ENERGY, mod);
+		T_Damage(other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_THROWN_PICKAXE, mod);
 		//attack hit, just free self
 		G_FreeEdict(self);
 	}

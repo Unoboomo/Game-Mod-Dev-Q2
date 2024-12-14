@@ -1411,7 +1411,7 @@ void weapon_bfg_fire (edict_t *ent)
 
 	VectorSet(offset, 8, 8, ent->viewheight-8);
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
-	fire_bfg (ent, start, forward, damage, 400, damage_radius, false);
+	fire_bfg (ent, start, forward, damage, 400, damage_radius);
 
 	ent->client->ps.gunframe++;
 
@@ -1464,7 +1464,7 @@ void Pickaxe_Fire(edict_t* ent, vec3_t g_offset, int damage)
 	fire_pickaxe(ent, start, forward, damage, Pickaxe_Knockback);
 	if (ent->client->pers.master_pickaxe == true) {
 		if (ent->health == ent->max_health) {
-			fire_bfg(ent, start, forward, damage, 1000, 120, true);
+			fire_master_pickaxe(ent, start, forward, damage, 1000, 120);
 		}
 	}
 }

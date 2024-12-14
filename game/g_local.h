@@ -671,6 +671,8 @@ void T_RadiusDamage (edict_t *inflictor, edict_t *attacker, float damage, edict_
 #define DAMAGE_BULLET			0x00000010  // damage is from a bullet (used for ricochets)
 #define DAMAGE_NO_PROTECTION	0x00000020  // armor, shields, invulnerability, and godmode have no effect
 #define DAMAGE_AREA				0x00000040 // Damage Caused by area damage, like Large Ember
+#define DAMAGE_SWUNG_PICKAXE	0x00000080 // Damage Caused by the swung pickaxe
+#define DAMAGE_THROWN_PICKAXE	0x00000100 // Damage Caused by the thrown pickaxe
 
 #define DEFAULT_BULLET_HSPREAD	300
 #define DEFAULT_BULLET_VSPREAD	500
@@ -740,10 +742,11 @@ void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int s
 void fire_grenade2 (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed, float timer, float damage_radius, qboolean held);
 void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, int radius_damage);
 void fire_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick);
-void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, qboolean pickaxe);
+void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius);
 
 // declare fire pickaxe
 void fire_pickaxe(edict_t* self, vec3_t start, vec3_t aimdir, int damage, int kick);
+void fire_master_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius); 
 // declare throw pickaxe
 void throw_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean hyper);
 
@@ -890,6 +893,7 @@ typedef struct
 
 
 	//Persistant Data for Underquake Abilities
+
 	//Dash
 	int max_dashes;
 	float dash_recharge_time;
@@ -904,6 +908,7 @@ typedef struct
 	//Battle Cry
 	qboolean resolve;
 	qboolean unleashed;
+	qboolean final_stand;
 
 } client_persistant_t;
 
@@ -1020,6 +1025,7 @@ struct gclient_s
 	qboolean battle_cry;
 	float last_battle_cry;
 	float unleashed_damage_modifier;
+	float final_stand_length;
 
 };
 
@@ -1214,6 +1220,35 @@ void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radiu
 * @param Takes a pointer to an entity (this is the think function of that entity)
 */
 void Reset_Combo(edict_t* ent);
+
+/*
+* @brief Calculates the swing damage of an attack
+* @param Takes an int which is the initial damage and a pointer to the attacking ent
+* @return Returns an int which is the final damage
+*/
+int Calculate_Swing_Damage(int damage, edict_t* client);
+
+/*
+* @brief Calculates the throw damage of an attack
+* @param Takes an int which is the initial damage and a pointer to the attacking ent
+* @return Returns an int which is the final damage
+*/
+int Calculate_Throw_Damage(int damage, edict_t* client);
+
+/*
+* @brief Calculates if an attack crits and changes any crit abilities affected by it
+* @param Takes a pointer to the attacking ent
+* @return Returns a true if a crit occurs, false otherwise
+*/
+qboolean Calculate_Crit(edict_t* attacker);
+
+/*
+* @brief Calculates the crit multiplier of a crit and changes any crit abilities affected by a crit
+* @param Takes a pointer to the attacking ent
+* @return Returns a true if a crit occurs, false otherwise
+*/
+float Calculate_Crit_Mult(edict_t* attacker);
+
 
 //UnderQuake Definitions
 #define MAX_RELICS	20

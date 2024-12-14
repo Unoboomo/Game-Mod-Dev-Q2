@@ -2041,3 +2041,148 @@ void Reset_Combo(edict_t* ent) {
 	
 	G_FreeEdict(ent);
 }
+
+int Calculate_Swing_Damage(int damage, edict_t* attacker) {
+	gclient_t* client_atk;
+	client_atk = attacker->client;
+
+	//if not client, return
+	if (!client_atk) {
+		return 0;
+	}
+
+	/*
+	Additive Damage Modifiers:
+	*/
+
+	//Berserker's Pendant, increases swing damage by 1:4 for missing health, uncapped.
+	if (client_atk->pers.berserk) {
+		damage += (attacker->max_health - attacker->health) / 4;
+	}
+
+	//Next
+
+	/*
+	Multiplicitive Damage Modifiers:
+	*/
+
+	//Next
+
+	return damage;
+}
+
+int Calculate_Throw_Damage(int damage, edict_t* attacker) {
+	gclient_t* client_atk;
+	client_atk = attacker->client;
+
+	//if not client, return
+	if (!client_atk) {
+		return 0;
+	}
+	/*
+	Additive Damage Modifiers:
+	*/
+
+	//Next
+
+	/*
+	Multiplicitive Damage Modifiers:
+	*/
+
+	//Next
+
+	return damage;
+}
+
+qboolean Calculate_Crit(edict_t* attacker) {
+	gclient_t* client_atk;
+	float crit_chance;
+
+	//if not client, return
+	client_atk = attacker->client;
+	if (!client_atk) {
+		return false;
+	}
+
+	//incrament the crit gauge
+	if (client_atk->pers.crit_gauge) {
+		client_atk->crit_gauge++;
+		if (client_atk->crit_gauge >= FULL_CRIT_GAUGE) {
+			client_atk->crit_gauge_full = true;
+		}
+	}
+
+	crit_chance = client_atk->pers.crit_chance;
+
+	/*
+	Additive Crit Chance Modifiers:
+	*/
+
+	//increase crit combo modifier, reset decay time
+	if (client_atk->pers.crit_combo) {
+		client_atk->crit_combo_modifier += 0.01;
+		gi.dprintf("Crit Combo Modifier is %.2f \n", client_atk->crit_combo_modifier);
+		client_atk->last_hit_time = level.time;
+		crit_chance += client_atk->crit_combo_modifier;
+	}
+
+	/*
+	Multiplicative Crit Chance Modifiers:
+	*/
+
+	//Shadow's Fang
+	if (client_atk->pers.fang == true) {
+		crit_chance *= 1.5;
+	}
+
+	//Is it a crit?
+	if (random() < crit_chance || client_atk->crit_next_attack) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+float Calculate_Crit_Mult(edict_t* attacker) {
+	gclient_t* client_atk;
+	float crit_multiplier;
+
+	//if not client, return
+	client_atk = attacker->client;
+	if (!client_atk) {
+		return 0;
+	}
+
+	crit_multiplier = client_atk->pers.crit_multiplier;
+	gi.dprintf("critical hit\n");
+
+	//If the crit was caused by a guarenteed crit from a full crit gauge, empty the crit gauge
+	if (client_atk->crit_next_attack) {
+		client_atk->crit_next_attack = false;
+		client_atk->crit_gauge_full = false;
+		client_atk->crit_gauge = 0;
+	}
+
+	//no matter what, reset the crit combo
+	if (client_atk->pers.crit_combo) {
+		client_atk->crit_combo_modifier = 0;
+		gi.dprintf("Crit Combo Modifier is %.2f \n", client_atk->crit_combo_modifier);
+	}
+
+	/*
+	Additive Crit_Multiplier Modifiers:
+	*/
+
+	//Dillon's Claw
+	if (client_atk->pers.claw == true) {
+		crit_multiplier += 0.5;
+	}
+
+	/*
+	Multiplicative Crit_Multiplier Modifiers:
+	*/
+
+
+	return crit_multiplier;
+}

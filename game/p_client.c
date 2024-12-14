@@ -652,6 +652,7 @@ void InitClientPersistant (gclient_t *client)
 
 	client->pers.resolve = false;
 	client->pers.unleashed = false;
+	client->pers.final_stand = false;
 
 }
 
@@ -1809,7 +1810,7 @@ void ClientBeginServerFrame(edict_t* ent)
 
 	//Check to disable Battle Cry
 	if (client->battle_cry) {
-		if (ent->client->last_battle_cry + BATTLE_CRY_DURATION < level.time) {
+		if (ent->client->last_battle_cry + BATTLE_CRY_DURATION + ent->client->final_stand_length < level.time) {
 			client->battle_cry = false;
 		}
 	}

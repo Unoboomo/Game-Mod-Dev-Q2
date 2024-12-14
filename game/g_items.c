@@ -455,6 +455,13 @@ qboolean Pickup_Fury_Unleashed(edict_t* ent, edict_t* other)
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
+
+qboolean Pickup_Final_Stand(edict_t* ent, edict_t* other)
+{
+	other->client->pers.final_stand = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
 //======================================================================
 
 void Use_Quad (edict_t *ent, gitem_t *item)
@@ -2286,7 +2293,7 @@ increases swing speed by 50%
 	},
 
 /*UnderQuake item_berserker's_pendant (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-increased damage at lower health
+increased swing damage at lower health
 */
 	{
 		"item_berserker's_pendant",
@@ -2309,7 +2316,7 @@ increased damage at lower health
 				/* precache */ ""
 	},
 /*UnderQuake item_resurrection (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-increased damage at lower health
+when hit with a fatal blow, set health to max_health *.5
 */
 	{
 		"item_resurrection",
@@ -2378,7 +2385,7 @@ Increases thrown pickaxe speed by 80%
 				/* precache */ ""
 	},
 /*UnderQuake item_dillon's_claw (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-Increases Crit multiplier by 125% multiplicatively
+Increases Crit multiplier by 0.5
 */
 	{
 		"item_dillon's_claw",
@@ -2401,7 +2408,7 @@ Increases Crit multiplier by 125% multiplicatively
 				/* precache */ ""
 	},
 /*UnderQuake item_shadow's_fang (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-Increases Crit chance by 150% multiplicatively
+Increases Crit chance by 50% multiplicatively
 */
 	{
 		"item_shadow's_fang",
@@ -2598,6 +2605,29 @@ Battle Cry increases damage mult by 2% for every monster in FURY_UNLEASHED_RADIU
 		NULL,
 		/* icon */		"p_adrenaline",
 		/* pickup */	"Fury Unleashed",
+		/* width */		2,
+				0,
+				NULL,
+				IT_ABILITY_UPGRADE,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+/*UnderQuake item_final_stand (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Battle Cry increases duration at low health
+*/
+	{
+		"item_final_stand",
+		Pickup_Final_Stand,
+		Use_Relic,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Final Stand",
 		/* width */		2,
 				0,
 				NULL,

@@ -377,14 +377,15 @@ qboolean CheckTeamDamage (edict_t *targ, edict_t *attacker)
 void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, vec3_t point, vec3_t normal, int damage, int knockback, int dflags, int mod)
 {
 	gclient_t	*client;
-	gclient_t	*client_atk;
 	int			take;
 	int			save;
 	int			asave;
 	int			psave;
 	int			te_sparks;
+
+	gclient_t*	client_atk;
 	float		mult_damage_mod = 1.0;
-	qboolean	crit = false;
+	qboolean	crit;
 
 	if (!targ->takedamage)
 		return;
@@ -450,83 +451,32 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 			VectorAdd (targ->velocity, kvel, targ->velocity);
 		}
 	}
-	// UnderQuake Damage Modifiers: Damage Calculation = (base damage + SUM(Additive Damage Modifiers)) * (1+SUM(Multiplicitive Damage Modifiers)) * Crit Modifier
 
-	//Additive Damage Modifiers
-
-	//Berserker's Pendant, increases swing damage by 1:4 for missing health, uncapped.
+	// UnderQuake Damage Equation: Damage = (base damage + SUM(Additive Damage Modifiers)) * (1 + SUM(Multiplicitive Damage Modifiers)) * Crit Modifier
 	if (client_atk) {
-		if (client_atk->pers.berserk) {
-			damage += (attacker->max_health - attacker->health) / 4;
+		// Addative and Multiplicitive damage modifiers
+		if (dflags & DAMAGE_SWUNG_PICKAXE) {
+			damage = Calculate_Swing_Damage(damage, attacker);
 		}
-	}
-	//Multiplicitive Damage Modifiers
-
-
-	//Crits
-	if (client_atk && !(dflags & DAMAGE_AREA)) { //crits cannot be done by area damage attacks
-		float crit_chance = client_atk->pers.crit_chance;
-
-		//Crit chance additive multipliers:
-
-		//Crit Combo
-		if (client_atk->pers.crit_combo) {
-			client_atk->crit_combo_modifier += 0.01;
-			gi.dprintf("Crit Combo Modifier is %.2f \n", client_atk->crit_combo_modifier);
-			client_atk->last_hit_time = level.time;
-			crit_chance += client_atk->crit_combo_modifier;
+		if (dflags & DAMAGE_THROWN_PICKAXE) {
+			damage = Calculate_Throw_Damage(damage, attacker);
 		}
 
-		//Crit chance multiplicative modifiers here:
-
-		//Shadow's Fang
-		if (client_atk->pers.fang == true) {
-			crit_chance *= 1.5;
-		}
-
-		//Crit Gauge ability upgrade
-		if (client_atk->pers.crit_gauge) {
-			client_atk->crit_gauge++;
-			if (client_atk->crit_gauge >= FULL_CRIT_GAUGE) {
-				client_atk->crit_gauge_full = true;
-			}
-		}
-		//Is it a crit?
-		if (random() < crit_chance || client_atk->crit_next_attack) {
-			float crit_multiplier = client_atk->pers.crit_multiplier;
-			gi.dprintf("critical hit\n");
-			crit = true;
-
-			//Crit Addative modifiers here:
-
-			//Dillon's Claw
-			if (client_atk->pers.claw == true) {
-				crit_multiplier += 0.5;
-			}
-
-			//Apply crit multipliers
-			damage *= crit_multiplier;
-
-			//If the crit was caused by a guarenteed crit from a full crit gauge, empty the crit gauge
-			if (client_atk->crit_next_attack) {
-				client_atk->crit_next_attack = false;
-				client_atk->crit_gauge_full = false;
-				client_atk->crit_gauge = 0;
-			}
-			
-			//no matter what, reset the crit combo
-			if (client_atk->pers.crit_combo) {
-				client_atk->crit_combo_modifier = 0;
-				gi.dprintf("Crit Combo Modifier is %.2f \n", client_atk->crit_combo_modifier);
+		//Crits
+		if (!(dflags & DAMAGE_AREA)) { //crits cannot be done by area damage attacks
+			crit = Calculate_Crit(attacker);
+			if (crit) {
+				damage *= Calculate_Crit_Mult(attacker);
 			}
 		}
 	}
 
-	//Battle Cry Ability, base *1.1 to damage, more with Savage Roar Ability Upgrade
+	//Battle Cry Ability, base *1.1 to damage, more with Fury Unleashed Ability Upgrade
 	if (client_atk) {
 		if (client_atk->battle_cry) {
 			//Battle Cry - Fury Unleashed
-			float unleashed_damage_mod = client_atk->unleashed_damage_modifier;
+			float unleashed_damage_mod;
+			unleashed_damage_mod = client_atk->unleashed_damage_modifier;
 
 			damage *= 1.1 + unleashed_damage_mod;
 		}
@@ -701,6 +651,9 @@ void T_RadiusDamage (edict_t *inflictor, edict_t *attacker, float damage, edict_
 	edict_t	*ent = NULL;
 	vec3_t	v;
 	vec3_t	dir;
+	int dflags;
+
+	dflags = DAMAGE_RADIUS;
 
 	while ((ent = findradius(ent, inflictor->s.origin, radius)) != NULL)
 	{
@@ -720,7 +673,11 @@ void T_RadiusDamage (edict_t *inflictor, edict_t *attacker, float damage, edict_
 			if (CanDamage (ent, inflictor))
 			{
 				VectorSubtract (ent->s.origin, inflictor->s.origin, dir);
-				T_Damage (ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, (int)points, (int)points, DAMAGE_RADIUS, mod);
+				if (!strcmp(inflictor->classname, "pickaxe beam")) {
+					dflags = dflags | DAMAGE_SWUNG_PICKAXE;
+				}
+
+				T_Damage (ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, (int)points, (int)points, dflags, mod);
 			}
 		}
 	}

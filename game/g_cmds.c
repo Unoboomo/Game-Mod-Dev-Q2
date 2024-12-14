@@ -261,6 +261,25 @@ void Cmd_Give_f (edict_t *ent)
 		}
 		return;
 	}
+	if (give_all || Q_stricmp(name, "Ability Upgrades") == 0)
+	{
+		for (i = 0; i < game.num_items; i++)
+		{
+			it = itemlist + i;
+			if (!it->pickup)
+				continue;
+			if (it->flags & (IT_ABILITY_UPGRADE)) {
+				it_ent = G_Spawn();
+				it_ent->classname = it->classname;
+				SpawnItem(it_ent, it);
+				Touch_Item(it_ent, ent, NULL, NULL);
+				if (it_ent->inuse)
+					G_FreeEdict(it_ent);
+			}
+
+		}
+		return;
+	}
 	if (give_all)
 	{
 		for (i=0 ; i<game.num_items ; i++)
@@ -1030,8 +1049,11 @@ command word = "cry"
 */
 void Cmd_Battle_Cry_f(edict_t* ent)
 {
+	if (ent->client->pers.final_stand) {
+		ent->client->final_stand_length = (float)(ent->max_health - ent->health) / 10.0;
+	}
 	if (ent->client->battle_cry) {
-		gi.dprintf("Battle Cry active, %.1f seconds left\n",ent->client->last_battle_cry + BATTLE_CRY_DURATION - level.time);
+		gi.dprintf("Battle Cry active, %.1f seconds left\n",ent->client->last_battle_cry + BATTLE_CRY_DURATION + ent->client->final_stand_length - level.time);
 	}
 	else {
 		if (!ent->client->last_battle_cry || ent->client->last_battle_cry + BATTLE_CRY_DURATION + BATTLE_CRY_COOLDOWN < level.time) { //battle cry if can
