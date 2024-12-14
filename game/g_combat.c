@@ -571,6 +571,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 				if (client->pers.inventory[client->pers.resurrect]) {
 					client->pers.inventory[client->pers.resurrect]--;
 					targ->health = targ->max_health * 0.2;
+					targ->s.event = EV_PLAYER_TELEPORT;
 					if (client->pers.inventory[client->pers.resurrect] == 0) {
 						client->pers.resurrect = -1;
 					}

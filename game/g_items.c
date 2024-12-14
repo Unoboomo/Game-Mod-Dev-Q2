@@ -2283,7 +2283,7 @@ increased damage at lower health
 		"models/items/adrenal/tris.md2", EF_ROTATE,
 		NULL,
 		/* icon */		"p_adrenaline",
-		/* pickup */	"Resurrection ",
+		/* pickup */	"Resurrection",
 		/* width */		2,
 				0,
 				NULL,
