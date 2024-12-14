@@ -377,11 +377,13 @@ qboolean CheckTeamDamage (edict_t *targ, edict_t *attacker)
 void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, vec3_t point, vec3_t normal, int damage, int knockback, int dflags, int mod)
 {
 	gclient_t	*client;
+	gclient_t	*client_atk;
 	int			take;
 	int			save;
 	int			asave;
 	int			psave;
 	int			te_sparks;
+	float		mult_damage_mod = 1.0;
 
 	if (!targ->takedamage)
 		return;
@@ -410,6 +412,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	}
 
 	client = targ->client;
+	client_atk = attacker->client;
 
 	if (dflags & DAMAGE_BULLET)
 		te_sparks = TE_BULLET_SPARKS;
@@ -419,7 +422,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	VectorNormalize(dir);
 
 // bonus damage for suprising a monster
-	if (!(dflags & DAMAGE_RADIUS) && (targ->svflags & SVF_MONSTER) && (attacker->client) && (!targ->enemy) && (targ->health > 0))
+	if (!(dflags & DAMAGE_RADIUS) && (targ->svflags & SVF_MONSTER) && (client_atk) && (!targ->enemy) && (targ->health > 0))
 		damage *= 2;
 
 	if (targ->flags & FL_NO_KNOCKBACK)
@@ -446,35 +449,37 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 			VectorAdd (targ->velocity, kvel, targ->velocity);
 		}
 	}
-	// UnderQuake Damage Modifiers
+	// UnderQuake Damage Modifiers: Damage Calculation = (base damage + SUM(Additive Damage Modifiers)) * (1+SUM(Multiplicitive Damage Modifiers)) * Crit Modifier
 
-	
-	//Berserker
-	if (attacker->client) {
-		if (attacker->client->pers.berserk) {
-			damage *= (1 - ((float) (attacker->health - attacker->max_health)) / (float) 120);
+	//Additive Damage Modifiers
+
+	//Berserker, increases swing damage by 1:4 for missing health, uncapped.
+	if (client_atk) {
+		if (client_atk->pers.berserk) {
+			damage += (attacker->max_health - attacker->health) / 4;
 		}
 	}
 
 	//Crits
-	if (attacker->client) {
-		float crit_chance = attacker->client->pers.crit_chance;
+	if (client_atk) {
+		float crit_chance = client_atk->pers.crit_chance;
 		//Crit modifiers here:
-		if (attacker->client->pers.fang == true) {
+		if (client_atk->pers.fang == true) {
 			crit_chance *= 1.5;
 		}
 		//Is it a crit?
 		if (random() < crit_chance) {
 			gi.dprintf("critical hit\n");
-			float crit_multiplier = attacker->client->pers.crit_multiplier;
+			float crit_multiplier = client_atk->pers.crit_multiplier;
 			//Crit multipliers modifiers here:
-			if (attacker->client->pers.claw == true) {
+			if (client_atk->pers.claw == true) {
 				crit_multiplier *= 1.25;
 			}
 			//Apply crit multipliers
 			damage *= crit_multiplier;
 		}
 	}
+
 	take = damage;
 	save = 0;
 
@@ -500,8 +505,8 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	// UnderQuake Using Damage Dealt
 	
 	//Vampirism
-	if (attacker->client) {
-		if (attacker->client->pers.vampire) {
+	if (client_atk) {
+		if (client_atk->pers.vampire) {
 			if (attacker->health < attacker->max_health) {
 				// 5% lifesteal
 				attacker->health += take * 0.05;
@@ -514,15 +519,28 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		}
 	}
 
+	//UnderQuake Find Damage Reduction
+
 	//Hoodie's Pillow
 	if (client) {
 		if (client->pers.pillow) {
-			take *= 0.75;
-			if (!take) {
-				take = 1;
-			}
+			mult_damage_mod -= 0.25;
+
 		}
 	}
+
+	//Underquake Apply Damage Reduction
+	if (client) {
+		if (mult_damage_mod < 0.25) {
+			mult_damage_mod = 0.25;
+		}
+		take *= mult_damage_mod;
+		//if mult_damage_mod reduces take below 1, we cannot deal fractions of a point of damage, so deal one damage instead
+		if (!take) {
+			take = 1;
+		}
+	}
+
 
 	psave = CheckPowerArmor (targ, point, normal, take, dflags);
 	take -= psave;
