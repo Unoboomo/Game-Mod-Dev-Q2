@@ -2186,3 +2186,64 @@ float Calculate_Crit_Mult(edict_t* attacker) {
 
 	return crit_multiplier;
 }
+
+int Calculate_Damage_Reduction(int damage, edict_t* targ) {
+	gclient_t*	client;
+	float		percent_damage_taken;
+
+	client = targ->client;
+
+	//if not client, return
+	if (!client) {
+		return 0;
+	}
+
+	// Find Damage Reduction
+	percent_damage_taken = 1.0;
+
+	//Hoodie's Pillow
+	if (client->pers.pillow) {
+		percent_damage_taken -= 0.25;
+	}
+
+	//Battle Cry - Unyielding Resolve
+	if (client->battle_cry && client->pers.resolve) {
+		percent_damage_taken -= 0.15;
+	}
+
+	// Apply Damage Reduction
+	if (percent_damage_taken < 0.25) {
+		percent_damage_taken = 0.25;
+	}
+	damage *= percent_damage_taken;
+
+	//if mult_damage_mod reduces take below 1, we cannot deal fractions of a point of damage, so deal one damage instead
+	if (!damage && !(targ->flags & FL_GODMODE)) {
+		damage = 1;
+	}
+
+	return damage;
+}
+
+void Ressurect(edict_t* targ) {
+	gclient_t* client;
+	client = targ->client;
+
+	//if not client or if not dead return
+	if (!client || targ->health > 0) {
+		return;
+	}
+	else { //client and dead
+		if (client->pers.resurrect != -1) { //holds the index of ressurection item in the player's inventory, -1 if DNE
+			if (client->pers.inventory[client->pers.resurrect]) {
+				client->pers.inventory[client->pers.resurrect]--;
+				targ->health = targ->max_health * 0.2;
+				targ->s.event = EV_PLAYER_TELEPORT;
+
+				if (client->pers.inventory[client->pers.resurrect] == 0) {
+					client->pers.resurrect = -1;
+				}
+			}
+		}
+	}
+}

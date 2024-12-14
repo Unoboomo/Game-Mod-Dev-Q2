@@ -1249,6 +1249,18 @@ qboolean Calculate_Crit(edict_t* attacker);
 */
 float Calculate_Crit_Mult(edict_t* attacker);
 
+/*
+* @brief Calculates the damage taken by the player from an attack after damage reduction is applied
+* @param Takes a pointer to the target ent and the damage dealt
+* @return Returns an int representing the new damage value
+*/
+int Calculate_Damage_Reduction(int damage, edict_t* targ);
+
+/*
+* @brief determine whether to ressurect an entity to 20% of max hp
+* @param Takes a pointer to the target ent
+*/
+void Ressurect(edict_t* targ);
 
 //UnderQuake Definitions
 #define MAX_RELICS	20

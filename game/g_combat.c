@@ -384,7 +384,6 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	int			te_sparks;
 
 	gclient_t*	client_atk;
-	float		mult_damage_mod = 1.0;
 	qboolean	crit;
 
 	if (!targ->takedamage)
@@ -415,6 +414,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 
 	client = targ->client;
 	client_atk = attacker->client;
+	crit = false;
 
 	if (dflags & DAMAGE_BULLET)
 		te_sparks = TE_BULLET_SPARKS;
@@ -516,38 +516,15 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 				// dont heal over max health
 				if (attacker->health > attacker->max_health)
 					attacker->health = attacker->max_health;
-
 			}
 		}
 	}
 
 	//UnderQuake Find Damage Reduction
-
 	if (client) {
-		//Hoodie's Pillow
-		if (client->pers.pillow) {
-			mult_damage_mod -= 0.25;
-		}
-
-		//Battle Cry - Unyielding Resolve
-		if (client->battle_cry && client->pers.resolve) {
-			mult_damage_mod -= 0.15;
-		}
+		take = Calculate_Damage_Reduction(take, targ);
 	}
-
-	//Underquake Apply Damage Reduction
-	if (client) {
-		if (mult_damage_mod < 0.25) {
-			mult_damage_mod = 0.25;
-		}
-		take *= mult_damage_mod;
-		//if mult_damage_mod reduces take below 1, we cannot deal fractions of a point of damage, so deal one damage instead
-		if (!take && !(targ->flags & FL_GODMODE)) {
-			take = 1;
-		}
-	}
-
-
+	
 	psave = CheckPowerArmor (targ, point, normal, take, dflags);
 	take -= psave;
 
@@ -571,19 +548,10 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 
 
 		targ->health = targ->health - take;
+
 		// Here for extra life
-		if (targ->health <= 0 && client) {
-			if (client->pers.resurrect != -1) {
-				if (client->pers.inventory[client->pers.resurrect]) {
-					client->pers.inventory[client->pers.resurrect]--;
-					targ->health = targ->max_health * 0.2;
-					targ->s.event = EV_PLAYER_TELEPORT;
-					if (client->pers.inventory[client->pers.resurrect] == 0) {
-						client->pers.resurrect = -1;
-					}
-				}
-			}
-		}
+		Ressurect(targ);
+
 		if (targ->health <= 0)
 		{
 			if ((targ->svflags & SVF_MONSTER) || (client))
@@ -593,13 +561,14 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		}
 	}
 	
-	//If the player has the Critical Stun item and the targ is a monster, do pain animation
+	//If the player has the Critical Stun item and the just crit a monster, do pain animation
 	if (client_atk) {
 		if (targ->svflags & SVF_MONSTER && crit && client_atk->pers.crit_stun) {
 			targ->pain_debounce_time = level.time;
 			targ->pain(targ, attacker, knockback, take);
 		}
 	}
+
 	if (targ->svflags & SVF_MONSTER)
 	{
 		M_ReactToDamage(targ, attacker);
@@ -609,6 +578,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 			if (!(dflags & DAMAGE_AREA)) {
 				targ->pain(targ, attacker, knockback, take); 
 			}
+
 			// nightmare mode monsters don't go into pain frames often
 			if (skill->value == 3)
 				targ->pain_debounce_time = level.time + 5;
