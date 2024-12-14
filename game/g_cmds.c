@@ -1038,6 +1038,22 @@ void Cmd_Battle_Cry_f(edict_t* ent)
 			ent->client->battle_cry = true;
 			ent->client->last_battle_cry = level.time;
 			gi.dprintf("Battle Cry activated\n");
+
+			//Fury Unleashed ability upgrade - increases damage bonus given by battle cry by 2% per nearby enemy
+			ent->client->unleashed_damage_modifier = 0;
+			if (ent->client->pers.unleashed) {
+				
+				edict_t* ent_list = NULL;
+
+				while ((ent_list = findradius(ent_list, ent->s.origin, FURY_UNLEASHED_RADIUS)) != NULL)
+				{
+
+					if (ent_list->svflags & SVF_MONSTER && !(ent_list->svflags & SVF_DEADMONSTER)) {
+						ent->client->unleashed_damage_modifier += 0.02;
+					}
+				}
+			}
+
 		}
 		else {
 			gi.dprintf("Battle Cry on cooldown, %.1f seconds left\n",ent->client->last_battle_cry + BATTLE_CRY_DURATION + BATTLE_CRY_COOLDOWN - level.time);

@@ -903,6 +903,7 @@ typedef struct
 
 	//Battle Cry
 	qboolean resolve;
+	qboolean unleashed;
 
 } client_persistant_t;
 
@@ -1018,6 +1019,8 @@ struct gclient_s
 	//Battle Cry Ability
 	qboolean battle_cry;
 	float last_battle_cry;
+	float unleashed_damage_modifier;
+
 };
 
 
@@ -1220,3 +1223,4 @@ void Reset_Combo(edict_t* ent);
 
 #define BATTLE_CRY_DURATION 10
 #define BATTLE_CRY_COOLDOWN 90
+#define FURY_UNLEASHED_RADIUS (float) 400

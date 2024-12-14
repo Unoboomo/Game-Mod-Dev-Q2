@@ -651,7 +651,7 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.crit_combo = false;
 
 	client->pers.resolve = false;
-
+	client->pers.unleashed = false;
 
 }
 

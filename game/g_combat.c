@@ -525,7 +525,10 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	//Battle Cry Ability, base *1.1 to damage, more with Savage Roar Ability Upgrade
 	if (client_atk) {
 		if (client_atk->battle_cry) {
-			damage *= 1.1;
+			//Battle Cry - Fury Unleashed
+			float unleashed_damage_mod = client_atk->unleashed_damage_modifier;
+
+			damage *= 1.1 + unleashed_damage_mod;
 		}
 	}
 
