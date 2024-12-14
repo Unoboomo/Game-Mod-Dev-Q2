@@ -1170,7 +1170,23 @@ void Dash(edict_t* ent, int dash_power);
 */
 void Item_List_Bounds(int FLAG, int bounds[]);
 
+/*
+* @breif populates a list with the indexes of all items with ITEM_FLAG, the rest of the list is filled with 0s
+* @param Takes an int array, an int pointer holding the number of indexes in the index_list, and the Flag of item type of the list
+*/
+void Populate_Item_Index_List(int index_list[], int* index_list_length, int ITEM_FLAG);
+
+/*
+* @breif Gets a random item classname from a list of item indexes
+* @param Takes an int array full of indexes of an item type in the item_list, an int pointer holding the number of indexes in the index_list, and a default item classname
+* @return Returns a character pointer of an item classname
+*/
+char* Random_Item_Classname(int index_list[], int* index_list_length, char* default_to);
+
+
 //Its RadiusDamage, but it doesnt care about distance from the inflictor
 void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radius, int mod);
+
+//UnderQuake Definitions
 
 #define MAX_RELICS	20

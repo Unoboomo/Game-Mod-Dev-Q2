@@ -1941,3 +1941,90 @@ void Item_List_Bounds(int FLAG, int bounds[])
 	bounds[0] = list_start;
 	bounds[1] = list_end;
 }
+
+void Populate_Item_Index_List(int index_list[], int* index_list_length, int ITEM_FLAG)
+{
+	edict_t*	ent_list;
+	int			item_bounds[2];
+	int			i;
+	int			list_length;
+
+	/*
+	list_length and index_list_length are different. when index_list[] was initialized, list_length was here: int index_list[list_length].
+	index_list_length is the number of indexes in index_list after it is populated with indexes
+	*/
+	list_length = sizeof(index_list) / sizeof(index_list[0]);
+
+	Item_List_Bounds(ITEM_FLAG, item_bounds);
+	gi.dprintf("%d, %d are the bounds\n", item_bounds[0], item_bounds[1]);
+
+	//initialize and populate item_list with indexes of all items of flag ITEM_FLAG in itemlist
+	*index_list_length = 0;
+	for (i = 0; i < list_length; i++) {
+		index_list[i] = 0;
+	}
+	for (i = 0; i <= (item_bounds[1] - item_bounds[0]); i++) {
+		index_list[i] = item_bounds[0] + i;
+		(*index_list_length)++;
+	}
+
+	//check to see if items are already in a players inventory, if they are, remove the item's index from item_list
+	for (i = (*index_list_length) - 1; i >= 0; i--) {
+		for (int j = 0; j < game.maxclients; j++)
+		{
+			ent_list = &g_edicts[1 + j];
+			if (game.clients[j].pers.inventory[index_list[i]] > 0) {
+				gi.dprintf("%d is already in a player inventory\n", index_list[i]);
+				for (int k = i; k < list_length; k++) {
+					if ((k + 1) < list_length) {
+						index_list[k] = index_list[k + 1];
+					}
+					else {
+						index_list[k] = 0;
+					}
+					
+				}
+				(*index_list_length)--;
+				break;
+			}
+		}
+	}
+}
+
+char* Random_Item_Classname(int index_list[], int *index_list_length, char* default_to)
+{
+	int			rand_index;
+	gitem_t		*item;
+
+	//get a random index between the start and end inclusive of the section in relic_list where there are relic indexes 
+	rand_index = random() * *index_list_length;
+
+	gi.dprintf("%d is random\n", rand_index);
+	gi.dprintf("%d is random\n", index_list[rand_index]);
+
+	if (index_list[rand_index] == 0) {	//no more relics
+		gi.dprintf("no more relics\n");
+		gi.dprintf("changed classname to %s\n", default_to);
+		return default_to;
+	}
+
+
+	else {
+		//change classname of entity to relic classname
+		item = GetItemByIndex(index_list[rand_index]);
+		if (item) {
+			gi.dprintf("changed classname to %s\n", item->classname);
+			//remove index of spawned item from list, so to not have duplicates
+			for (int i = rand_index; i < MAX_RELICS - 1; i++) {
+				index_list[i] = index_list[i + 1];
+			}
+			(*index_list_length)--;
+			gi.dprintf("%d is index_list_length\n", *index_list_length);
+			return item->classname;
+		}
+		//rand_index is out of bounds, return NULL so no entity spawns
+		else {
+			return NULL;
+		}
+	}
+}

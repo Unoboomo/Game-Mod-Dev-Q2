@@ -514,6 +514,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		}
 	}
 
+	//Hoodie's Pillow
 	if (client) {
 		if (client->pers.pillow) {
 			take *= 0.75;
@@ -572,7 +573,10 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		M_ReactToDamage(targ, attacker);
 		if (!(targ->monsterinfo.aiflags & AI_DUCKED) && (take))
 		{
-			targ->pain(targ, attacker, knockback, take);
+			//if damage is from an areaDamage attack, dont go into pain frames
+			if (!(dflags & DAMAGE_NO_REACTION)) {
+				targ->pain(targ, attacker, knockback, take); 
+			}
 			// nightmare mode monsters don't go into pain frames often
 			if (skill->value == 3)
 				targ->pain_debounce_time = level.time + 5;
@@ -662,7 +666,7 @@ void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radiu
 		if (CanDamage(ent, inflictor))
 		{
 			VectorSubtract(ent->s.origin, inflictor->s.origin, dir);
-			T_Damage(ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, damage, damage, DAMAGE_RADIUS, mod);
+			T_Damage(ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, damage, damage, DAMAGE_RADIUS|DAMAGE_NO_REACTION, mod);
 		}
 	}
 }
