@@ -1020,6 +1020,32 @@ void Cmd_Crit_Next_f(edict_t* ent)
 }
 
 /*
+==================
+Cmd_Battle_Cry_f
+
+Battle Cry Ability, gain 10% damage increase for the next 15 seconds at base level.
+
+command word = "cry"
+==================
+*/
+void Cmd_Battle_Cry_f(edict_t* ent)
+{
+	if (ent->client->battle_cry) {
+		gi.dprintf("Battle Cry active, %.1f seconds left\n",ent->client->last_battle_cry + BATTLE_CRY_DURATION - level.time);
+	}
+	else {
+		if (!ent->client->last_battle_cry || ent->client->last_battle_cry + BATTLE_CRY_DURATION + BATTLE_CRY_COOLDOWN < level.time) { //battle cry if can
+			ent->client->battle_cry = true;
+			ent->client->last_battle_cry = level.time;
+			gi.dprintf("Battle Cry activated\n");
+		}
+		else {
+			gi.dprintf("Battle Cry on cooldown, %.1f seconds left\n",ent->client->last_battle_cry + BATTLE_CRY_DURATION + BATTLE_CRY_COOLDOWN - level.time);
+		}
+	}
+}
+
+/*
 =================
 ClientCommand
 =================
@@ -1112,6 +1138,8 @@ void ClientCommand (edict_t *ent)
 		Cmd_Dash_f(ent);
 	else if (Q_stricmp(cmd, "crit_next") == 0)
 		Cmd_Crit_Next_f(ent);
+	else if (Q_stricmp(cmd, "cry") == 0)
+		Cmd_Battle_Cry_f(ent);
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
 }

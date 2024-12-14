@@ -460,6 +460,8 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 			damage += (attacker->max_health - attacker->health) / 4;
 		}
 	}
+	//Multiplicitive Damage Modifiers
+
 
 	//Crits
 	if (client_atk && !(dflags & DAMAGE_AREA)) { //crits cannot be done by area damage attacks
@@ -495,7 +497,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 			gi.dprintf("critical hit\n");
 			crit = true;
 
-			//Crit modifiers here:
+			//Crit Addative modifiers here:
 
 			//Dillon's Claw
 			if (client_atk->pers.claw == true) {
@@ -517,6 +519,13 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 				client_atk->crit_combo_modifier = 0;
 				gi.dprintf("Crit Combo Modifier is %.2f \n", client_atk->crit_combo_modifier);
 			}
+		}
+	}
+
+	//Battle Cry Ability, base *1.1 to damage, more with Savage Roar Ability Upgrade
+	if (client_atk) {
+		if (client_atk->battle_cry) {
+			damage *= 1.1;
 		}
 	}
 

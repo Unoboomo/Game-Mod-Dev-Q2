@@ -1805,6 +1805,13 @@ void ClientBeginServerFrame(edict_t* ent)
 		}
 	}
 
+	//Check to disable Battle Cry
+	if (client->battle_cry) {
+		if (ent->client->last_battle_cry + BATTLE_CRY_DURATION < level.time) {
+			client->battle_cry = false;
+		}
+	}
+
 	//Large Ember DOT to surrounding enemies
 	if (client->pers.ember) {
 		if ((int)(level.time * 10) % 10 == 0) {

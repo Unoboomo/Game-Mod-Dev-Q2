@@ -1000,15 +1000,21 @@ struct gclient_s
 	qboolean	update_chase;		// need to update chase info?
 
 	//UnderQuake Variables
+	//Dash Ability
 	int dashes;
 	float last_dash_recharge;
 
+	//Crit Ability
 	int crit_gauge;
 	qboolean crit_gauge_full;
 	qboolean crit_next_attack;
 
 	float crit_combo_modifier;
 	float last_hit_time;
+
+	//Battle Cry Ability
+	qboolean battle_cry;
+	float last_battle_cry;
 };
 
 
@@ -1162,33 +1168,33 @@ struct edict_s
 };
 
 /*
-* @breif This checks to see if the pickaxe entity exists (is thrown)
+* @brief This checks to see if the pickaxe entity exists (is thrown)
 * @param Takes no parameters
 * @return Returns true if the entity exists, false if not
 */
 qboolean Is_Thrown(void);
 
 /*
-* @breif Makes an entity dash foreward 
+* @brief Makes an entity dash foreward 
 * @param Takes an entity (to be dashed), and an integer (power to dash with)
 */
 void Dash(edict_t* ent, int dash_power);
 
 /*
-* @breif Finds the lowest and highest index of an item of type FLAG in the itemlist, puts them in the bounds array
+* @brief Finds the lowest and highest index of an item of type FLAG in the itemlist, puts them in the bounds array
 * @param Takes an int parameter (should be a gitem_t->flags type) and an integer array of size 2
 * @return Returns a list of lowest and highest index of item of type FLAG
 */
 void Item_List_Bounds(int FLAG, int bounds[]);
 
 /*
-* @breif populates a list with the indexes of all items with ITEM_FLAG, the rest of the list is filled with 0s
+* @brief populates a list with the indexes of all items with ITEM_FLAG, the rest of the list is filled with 0s
 * @param Takes an int array, an int pointer holding the number of indexes in the index_list, and the Flag of item type of the list
 */
 void Populate_Item_Index_List(int index_list[], int* index_list_length, int ITEM_FLAG);
 
 /*
-* @breif Gets a random item classname from a list of item indexes
+* @brief Gets a random item classname from a list of item indexes
 * @param Takes an int array full of indexes of an item type in the item_list, an int pointer holding the number of indexes in the index_list, and a default item classname
 * @return Returns a character pointer of an item classname
 */
@@ -1198,12 +1204,16 @@ char* Random_Item_Classname(int index_list[], int* index_list_length, char* defa
 void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radius, int mod);
 
 /*
-* @breif Resets the crit_combo of the player that owns ent, then frees ent
+* @brief Resets the crit_combo of the player that owns ent, then frees ent
 * @param Takes a pointer to an entity (this is the think function of that entity)
 */
 void Reset_Combo(edict_t* ent);
 
 //UnderQuake Definitions
 #define MAX_RELICS	20
+
 #define FULL_CRIT_GAUGE 20
 #define CRIT_COMBO_DECAY 4
+
+#define BATTLE_CRY_DURATION 10
+#define BATTLE_CRY_COOLDOWN 90
