@@ -427,6 +427,13 @@ qboolean Pickup_Crit_Gauge(edict_t* ent, edict_t* other)
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
+
+qboolean Pickup_Crit_Stun(edict_t* ent, edict_t* other)
+{
+	other->client->pers.crit_stun = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
 //======================================================================
 
 void Use_Quad (edict_t *ent, gitem_t *item)
@@ -2351,7 +2358,7 @@ Increases thrown pickaxe speed by 80%
 	},
 /*UnderQuake item_dillon's_claw (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
 Increases Crit multiplier by 125% multiplicatively
-	*/
+*/
 	{
 		"item_dillon's_claw",
 		Pickup_Dillons_Claw,
@@ -2374,7 +2381,7 @@ Increases Crit multiplier by 125% multiplicatively
 	},
 /*UnderQuake item_shadow's_fang (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
 Increases Crit chance by 150% multiplicatively
-	*/
+*/
 	{
 		"item_shadow's_fang",
 		Pickup_Shadows_Fang,
@@ -2420,7 +2427,7 @@ Decreases damage taken by 25%
 	},
 /*UnderQuake item_large_ember (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
 Causes nearby enemies to be inflicted with minor fire damage (1-3 per second)
-	*/
+*/
 	{
 		"item_large_ember",
 		Pickup_Large_Ember,
@@ -2464,9 +2471,9 @@ increased max hp by 1
 				0,
 				/* precache */ ""
 	},
-/*UnderQuake item_large_ember (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-Causes nearby enemies to be inflicted with minor fire damage (1-3 per second)
-	*/
+/*UnderQuake item_crit_gauge (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Every hit fills up the crit gauge. When full, pressing MOUSE3 causes the next attack to crit
+*/
 	{
 		"item_crit_gauge",
 		Pickup_Crit_Gauge,
@@ -2478,6 +2485,29 @@ Causes nearby enemies to be inflicted with minor fire damage (1-3 per second)
 		NULL,
 		/* icon */		"p_adrenaline",
 		/* pickup */	"Crit Gauge",
+		/* width */		2,
+				0,
+				NULL,
+				IT_ABILITY_UPGRADE,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+/*UnderQuake item_critical_stun (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Critical hits stun enemies
+*/
+	{
+		"item_critical_stun",
+		Pickup_Crit_Stun,
+		Use_Relic,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Critical Stun",
 		/* width */		2,
 				0,
 				NULL,

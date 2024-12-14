@@ -647,7 +647,7 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.crit_multiplier = 1.5;
 	client->pers.crit_chance = 0.08;
 	client->pers.crit_gauge = false;
-
+	client->pers.crit_stun = false;
 
 }
 

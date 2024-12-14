@@ -898,6 +898,7 @@ typedef struct
 	float crit_multiplier;
 	float crit_chance;
 	qboolean crit_gauge;
+	qboolean crit_stun;
 
 } client_persistant_t;
 

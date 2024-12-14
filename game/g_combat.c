@@ -384,6 +384,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	int			psave;
 	int			te_sparks;
 	float		mult_damage_mod = 1.0;
+	qboolean	crit = false;
 
 	if (!targ->takedamage)
 		return;
@@ -478,14 +479,18 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		}
 		//Is it a crit?
 		if (random() < crit_chance || client_atk->crit_next_attack) {
-			gi.dprintf("critical hit\n");
 			float crit_multiplier = client_atk->pers.crit_multiplier;
+			gi.dprintf("critical hit\n");
+			crit = true;
+
 			//Crit multipliers modifiers here:
 			if (client_atk->pers.claw == true) {
 				crit_multiplier *= 1.25;
 			}
+
 			//Apply crit multipliers
 			damage *= crit_multiplier;
+
 			//If the crit was caused by a guarenteed crit from a full crit gauge, empty the crit gauge
 			if (client_atk->crit_next_attack) {
 				client_atk->crit_next_attack = false;
@@ -551,7 +556,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		}
 		take *= mult_damage_mod;
 		//if mult_damage_mod reduces take below 1, we cannot deal fractions of a point of damage, so deal one damage instead
-		if (!take) {
+		if (!take && !(targ->flags & FL_GODMODE)) {
 			take = 1;
 		}
 	}
@@ -601,7 +606,14 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 			return;
 		}
 	}
-
+	
+	//If the player has the Critical Stun item and the targ is a monster, do pain animation
+	if (client_atk) {
+		if (targ->svflags & SVF_MONSTER && crit && client_atk->pers.crit_stun) {
+			targ->pain_debounce_time = level.time;
+			targ->pain(targ, attacker, knockback, take);
+		}
+	}
 	if (targ->svflags & SVF_MONSTER)
 	{
 		M_ReactToDamage(targ, attacker);
@@ -623,9 +635,9 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	}
 	else if (take)
 	{
-		if (targ->pain)
+		if (targ->pain) {
 			targ->pain(targ, attacker, knockback, take);
-
+		}
 	}
 
 	// add to the damage inflicted on a player this frame
