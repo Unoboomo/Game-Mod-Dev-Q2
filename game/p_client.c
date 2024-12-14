@@ -648,6 +648,8 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.crit_chance = 0.08;
 	client->pers.crit_gauge = false;
 	client->pers.crit_stun = false;
+	client->pers.crit_combo = false;
+
 
 }
 
@@ -1791,6 +1793,15 @@ void ClientBeginServerFrame(edict_t* ent)
 		if (client->dashes < client->pers.max_dashes && (client->last_dash_recharge + client->pers.dash_recharge_time) < level.time) {
 			client->dashes = client->pers.max_dashes;
 			client->last_dash_recharge = level.time;
+		}
+	}
+	
+	//Critical Combo deterioration, decays by 0.01 every CRIT_COMBO_DECAY seconds
+	if (client->pers.crit_combo) {
+		if (client->crit_combo_modifier > 0 && (client->last_hit_time + CRIT_COMBO_DECAY) < level.time) { //if we have a combo going and the our last hit was more than CRIT_COMBO_DECAY seconds ago
+			client->crit_combo_modifier -= 0.01;
+			gi.dprintf("Crit Combo Modifier is %.2f \n", client->crit_combo_modifier);
+			client->last_hit_time = level.time; //next decay in another 3 seconds
 		}
 	}
 

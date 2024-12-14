@@ -2028,3 +2028,16 @@ char* Random_Item_Classname(int index_list[], int *index_list_length, char* defa
 		}
 	}
 }
+
+void Reset_Combo(edict_t* ent) {
+	if (ent->owner) {
+		if (ent->owner->client) {
+			if (ent->owner->client->pers.crit_combo) {
+				ent->owner->client->crit_combo_modifier = 0;
+				gi.dprintf("Crit Combo Modifier is %.2f \n", ent->owner->client->crit_combo_modifier);
+			}
+		}
+	}
+	
+	G_FreeEdict(ent);
+}

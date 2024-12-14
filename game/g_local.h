@@ -899,6 +899,7 @@ typedef struct
 	float crit_chance;
 	qboolean crit_gauge;
 	qboolean crit_stun;
+	qboolean crit_combo;
 
 } client_persistant_t;
 
@@ -1005,6 +1006,9 @@ struct gclient_s
 	int crit_gauge;
 	qboolean crit_gauge_full;
 	qboolean crit_next_attack;
+
+	float crit_combo_modifier;
+	float last_hit_time;
 };
 
 
@@ -1190,11 +1194,16 @@ void Populate_Item_Index_List(int index_list[], int* index_list_length, int ITEM
 */
 char* Random_Item_Classname(int index_list[], int* index_list_length, char* default_to);
 
-
 //Its RadiusDamage, but it doesnt care about distance from the inflictor
 void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radius, int mod);
 
-//UnderQuake Definitions
+/*
+* @breif Resets the crit_combo of the player that owns ent, then frees ent
+* @param Takes a pointer to an entity (this is the think function of that entity)
+*/
+void Reset_Combo(edict_t* ent);
 
+//UnderQuake Definitions
 #define MAX_RELICS	20
 #define FULL_CRIT_GAUGE 20
+#define CRIT_COMBO_DECAY 4

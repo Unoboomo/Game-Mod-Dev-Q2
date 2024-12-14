@@ -465,7 +465,19 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	if (client_atk && !(dflags & DAMAGE_AREA)) { //crits cannot be done by area damage attacks
 		float crit_chance = client_atk->pers.crit_chance;
 
-		//Crit modifiers here:
+		//Crit chance additive multipliers
+
+		//Crit Combo
+		if (client_atk->pers.crit_combo) {
+			client_atk->crit_combo_modifier += 0.01;
+			gi.dprintf("Crit Combo Modifier is %.2f \n", client_atk->crit_combo_modifier);
+			client_atk->last_hit_time = level.time;
+			crit_chance += client_atk->crit_combo_modifier;
+		}
+
+		//Crit chance multiplicative modifiers here:
+
+		//Shadow's Fang
 		if (client_atk->pers.fang == true) {
 			crit_chance *= 1.5;
 		}
@@ -483,9 +495,11 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 			gi.dprintf("critical hit\n");
 			crit = true;
 
-			//Crit multipliers modifiers here:
+			//Crit modifiers here:
+
+			//Dillon's Claw
 			if (client_atk->pers.claw == true) {
-				crit_multiplier *= 1.25;
+				crit_multiplier += 0.5;
 			}
 
 			//Apply crit multipliers
@@ -496,6 +510,12 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 				client_atk->crit_next_attack = false;
 				client_atk->crit_gauge_full = false;
 				client_atk->crit_gauge = 0;
+			}
+			
+			//no matter what, reset the crit combo
+			if (client_atk->pers.crit_combo) {
+				client_atk->crit_combo_modifier = 0;
+				gi.dprintf("Crit Combo Modifier is %.2f \n", client_atk->crit_combo_modifier);
 			}
 		}
 	}

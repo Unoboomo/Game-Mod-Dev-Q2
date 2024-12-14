@@ -949,7 +949,17 @@ void fire_pickaxe(edict_t* self, vec3_t start, vec3_t aimdir, int damage, int ki
 
 	if (!((tr.surface) && (tr.surface->flags & SURF_SKY))) //dont hit the sky
 	{
-		if (tr.fraction < 1.0) //if we hit something (if trace does not reach end)
+		if (!(tr.fraction < 1.0)) //if we did not hit something (if trace reaches end)
+		{
+			//if miss, end combo
+			if (self->client) {
+				if (self->client->pers.crit_combo) {
+					self->client->crit_combo_modifier = 0;
+					gi.dprintf("Crit Combo Modifier is %.2f \n", self->client->crit_combo_modifier);
+				}
+			}
+		}
+		else //if we hit something (if trace does not reach end)
 		{
 			if (tr.ent->takedamage) //if thing can take damage, damage it
 			{
@@ -965,6 +975,14 @@ void fire_pickaxe(edict_t* self, vec3_t start, vec3_t aimdir, int damage, int ki
 
 				if (self->client)
 					PlayerNoise(self, tr.endpos, PNOISE_IMPACT);
+
+				//if miss, end combo
+				if (self->client) {
+					if (self->client->pers.crit_combo) {
+						self->client->crit_combo_modifier = 0;
+						gi.dprintf("Crit Combo Modifier is %.2f \n", self->client->crit_combo_modifier);
+					}
+				}
 			}
 		}
 	}
@@ -978,6 +996,47 @@ throw_pickaxe
 Used for pickaxe throw command
 =================
 */
+void pickaxe_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf)
+{
+	int		mod;
+
+	if (other == self->owner)
+		return;
+
+	if (surf && (surf->flags & SURF_SKY))
+	{
+		//attack missed, reset combo if able and free self
+		Reset_Combo(self);
+		return;
+	}
+
+	if (self->owner->client)
+		PlayerNoise(self->owner, self->s.origin, PNOISE_IMPACT);
+
+	if (other->takedamage)
+	{
+		if (self->spawnflags & 1)
+			mod = MOD_HYPERBLASTER;
+		else
+			mod = MOD_BLASTER;
+		T_Damage(other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_ENERGY, mod);
+		//attack hit, just free self
+		G_FreeEdict(self);
+	}
+	else
+	{
+		gi.WriteByte(svc_temp_entity);
+		gi.WriteByte(TE_BLASTER);
+		gi.WritePosition(self->s.origin);
+		if (!plane)
+			gi.WriteDir(vec3_origin);
+		else
+			gi.WriteDir(plane->normal);
+		gi.multicast(self->s.origin, MULTICAST_PVS);
+		//attack missed, reset combo if able and free self
+		Reset_Combo(self);
+	}
+}
 
 void throw_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean hyper)
 {
@@ -1006,9 +1065,9 @@ void throw_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int spee
 	pickaxe->s.modelindex = gi.modelindex("models/objects/laser/tris.md2");
 	pickaxe->s.sound = gi.soundindex("misc/lasfly.wav");
 	pickaxe->owner = self;
-	pickaxe->touch = blaster_touch;
+	pickaxe->touch = pickaxe_touch;
 	pickaxe->nextthink = level.time + (float) 750 / speed;
-	pickaxe->think = G_FreeEdict;
+	pickaxe->think = Reset_Combo;
 	pickaxe->dmg = damage;
 	pickaxe->classname = "pickaxe";
 	if (hyper)
