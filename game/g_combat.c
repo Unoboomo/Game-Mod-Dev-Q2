@@ -454,7 +454,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 
 	//Additive Damage Modifiers
 
-	//Berserker, increases swing damage by 1:4 for missing health, uncapped.
+	//Berserker's Pendant, increases swing damage by 1:4 for missing health, uncapped.
 	if (client_atk) {
 		if (client_atk->pers.berserk) {
 			damage += (attacker->max_health - attacker->health) / 4;
@@ -467,7 +467,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	if (client_atk && !(dflags & DAMAGE_AREA)) { //crits cannot be done by area damage attacks
 		float crit_chance = client_atk->pers.crit_chance;
 
-		//Crit chance additive multipliers
+		//Crit chance additive multipliers:
 
 		//Crit Combo
 		if (client_atk->pers.crit_combo) {
@@ -570,11 +570,15 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 
 	//UnderQuake Find Damage Reduction
 
-	//Hoodie's Pillow
 	if (client) {
+		//Hoodie's Pillow
 		if (client->pers.pillow) {
 			mult_damage_mod -= 0.25;
+		}
 
+		//Battle Cry - Unyielding Resolve
+		if (client->battle_cry && client->pers.resolve) {
+			mult_damage_mod -= 0.15;
 		}
 	}
 

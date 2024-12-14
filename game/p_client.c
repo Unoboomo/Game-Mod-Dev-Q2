@@ -650,6 +650,8 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.crit_stun = false;
 	client->pers.crit_combo = false;
 
+	client->pers.resolve = false;
+
 
 }
 

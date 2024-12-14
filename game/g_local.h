@@ -901,6 +901,9 @@ typedef struct
 	qboolean crit_stun;
 	qboolean crit_combo;
 
+	//Battle Cry
+	qboolean resolve;
+
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns

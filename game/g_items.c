@@ -441,6 +441,13 @@ qboolean Pickup_Crit_Combo(edict_t* ent, edict_t* other)
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
+
+qboolean Pickup_Unyielding_Resolve(edict_t* ent, edict_t* other)
+{
+	other->client->pers.resolve = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
 //======================================================================
 
 void Use_Quad (edict_t *ent, gitem_t *item)
@@ -2538,6 +2545,29 @@ Consecutive successful attacks (attacks that hit) increase crit chance
 		NULL,
 		/* icon */		"p_adrenaline",
 		/* pickup */	"Critical Combo",
+		/* width */		2,
+				0,
+				NULL,
+				IT_ABILITY_UPGRADE,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+/*UnderQuake item_unyielding_resolve (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Battle Cry reduces damage taken by 15%
+*/
+	{
+		"item_unyielding_resolve",
+		Pickup_Unyielding_Resolve,
+		Use_Relic,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Unyielding Resolve",
 		/* width */		2,
 				0,
 				NULL,
