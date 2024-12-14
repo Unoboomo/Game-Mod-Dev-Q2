@@ -896,7 +896,6 @@ typedef struct
 
 	//Dash
 	int max_dashes;
-	float dash_recharge_time;
 
 	//Crit System
 	float crit_multiplier;
@@ -1260,11 +1259,18 @@ int Calculate_Damage_Reduction(int damage, edict_t* targ);
 * @brief determine whether to ressurect an entity to 20% of max hp
 * @param Takes a pointer to the target ent
 */
-void Ressurect(edict_t* targ);
+void Resurrect(edict_t* targ);
+
+/*
+* @brief Runs all the UnderQuake updates that need to occur every frame
+* @param Takes a pointer to the target ent (client)
+*/
+void UnderQuake_Server_Frame_Updates(edict_t* ent);
 
 //UnderQuake Definitions
 #define MAX_RELICS	20
 
+#define DASH_RECHARGE_TIME (float) 0.5
 #define FULL_CRIT_GAUGE 20
 #define CRIT_COMBO_DECAY 4
 

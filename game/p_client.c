@@ -642,7 +642,6 @@ void InitClientPersistant (gclient_t *client)
 
 
 	client->pers.max_dashes = 1;
-	client->pers.dash_recharge_time = (float) 0.5;
 
 	client->pers.crit_multiplier = 1.5;
 	client->pers.crit_chance = 0.08;
@@ -1788,39 +1787,8 @@ void ClientBeginServerFrame(edict_t* ent)
 		return;
 
 	client = ent->client;
-	// Check grounded to reset dashes
-	if (ent->groundentity) {
-		if (!client->last_dash_recharge) {
-			client->last_dash_recharge = level.time;
-		}
-		if (client->dashes < client->pers.max_dashes && (client->last_dash_recharge + client->pers.dash_recharge_time) < level.time) {
-			client->dashes = client->pers.max_dashes;
-			client->last_dash_recharge = level.time;
-		}
-	}
 	
-	//Critical Combo deterioration, decays by 0.01 every CRIT_COMBO_DECAY seconds
-	if (client->pers.crit_combo) {
-		if (client->crit_combo_modifier > 0 && (client->last_hit_time + CRIT_COMBO_DECAY) < level.time) { //if we have a combo going and the our last hit was more than CRIT_COMBO_DECAY seconds ago
-			client->crit_combo_modifier -= 0.01;
-			gi.dprintf("Crit Combo Modifier is %.2f \n", client->crit_combo_modifier);
-			client->last_hit_time = level.time; //next decay in another 3 seconds
-		}
-	}
-
-	//Check to disable Battle Cry
-	if (client->battle_cry) {
-		if (ent->client->last_battle_cry + BATTLE_CRY_DURATION + ent->client->final_stand_length < level.time) {
-			client->battle_cry = false;
-		}
-	}
-
-	//Large Ember DOT to surrounding enemies
-	if (client->pers.ember) {
-		if ((int)(level.time * 10) % 10 == 0) {
-			T_AreaDamage(ent, ent, (int)(random() * 3) + 1, 300, MOD_UNKNOWN);
-		}
-	}
+	UnderQuake_Server_Frame_Updates(ent);
 
 	if (deathmatch->value &&
 		client->pers.spectator != client->resp.spectator &&

@@ -1052,11 +1052,15 @@ void Cmd_Battle_Cry_f(edict_t* ent)
 	if (ent->client->pers.final_stand) {
 		ent->client->final_stand_length = (float)(ent->max_health - ent->health) / 10.0;
 	}
+	else {
+		ent->client->final_stand_length = 0;
+	}
 	if (ent->client->battle_cry) {
 		gi.dprintf("Battle Cry active, %.1f seconds left\n",ent->client->last_battle_cry + BATTLE_CRY_DURATION + ent->client->final_stand_length - level.time);
 	}
 	else {
-		if (!ent->client->last_battle_cry || ent->client->last_battle_cry + BATTLE_CRY_DURATION + BATTLE_CRY_COOLDOWN < level.time) { //battle cry if can
+		//if we are not in a battle cry and are able to battle cry, do it
+		if (!ent->client->last_battle_cry || ent->client->last_battle_cry + BATTLE_CRY_DURATION + BATTLE_CRY_COOLDOWN < level.time) { 
 			ent->client->battle_cry = true;
 			ent->client->last_battle_cry = level.time;
 			gi.dprintf("Battle Cry activated\n");

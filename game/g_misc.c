@@ -2225,7 +2225,7 @@ int Calculate_Damage_Reduction(int damage, edict_t* targ) {
 	return damage;
 }
 
-void Ressurect(edict_t* targ) {
+void Resurrect(edict_t* targ) {
 	gclient_t* client;
 	client = targ->client;
 
@@ -2244,6 +2244,50 @@ void Ressurect(edict_t* targ) {
 					client->pers.resurrect = -1;
 				}
 			}
+		}
+	}
+}
+
+void UnderQuake_Server_Frame_Updates(edict_t* ent) {
+	gclient_t* client;
+	client = ent->client;
+
+	if (!client) {
+		return;
+	}
+
+	// Check grounded to reset dashes
+	if (ent->groundentity) {
+		if (!client->last_dash_recharge) {
+			client->last_dash_recharge = level.time;
+		}
+		if (client->dashes < client->pers.max_dashes && (client->last_dash_recharge + DASH_RECHARGE_TIME) < level.time) {
+			client->dashes ++;
+			client->last_dash_recharge = level.time;
+		}
+	}
+
+	//Critical Combo deterioration, decays by 0.01 every CRIT_COMBO_DECAY seconds
+	if (client->pers.crit_combo) {
+		//if we have a combo going and the our last hit was more than CRIT_COMBO_DECAY seconds ago, decay the combo
+		if (client->crit_combo_modifier > 0 && (client->last_hit_time + CRIT_COMBO_DECAY) < level.time) { 
+			client->crit_combo_modifier -= 0.01;
+			gi.dprintf("Crit Combo Modifier is %.2f \n", client->crit_combo_modifier);
+			client->last_hit_time = level.time; //next decay in another CRIT_COMBO_DECAY seconds
+		}
+	}
+
+	//Check to disable Battle Cry
+	if (client->battle_cry) {
+		if (ent->client->last_battle_cry + BATTLE_CRY_DURATION + ent->client->final_stand_length < level.time) {
+			client->battle_cry = false;
+		}
+	}
+
+	//Large Ember DOT to surrounding enemies
+	if (client->pers.ember) {
+		if ((int)(level.time * 10) % 10 == 0) {
+			T_AreaDamage(ent, ent, (int)(random() * 3) + 1,  300, MOD_UNKNOWN);
 		}
 	}
 }

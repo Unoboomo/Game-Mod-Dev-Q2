@@ -490,7 +490,10 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	{
 		take = 0;
 		save = damage;
-		SpawnDamage (te_sparks, point, normal, save);
+		//if is an AreaDamage attack, dont spawn particles
+		if (!(dflags & DAMAGE_AREA)) {
+			SpawnDamage(te_sparks, point, normal, save);
+		}
 	}
 
 	// check for invincibility
@@ -541,16 +544,22 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 // do the damage
 	if (take)
 	{
-		if ((targ->svflags & SVF_MONSTER) || (client))
-			SpawnDamage (TE_BLOOD, point, normal, take);
-		else
-			SpawnDamage (te_sparks, point, normal, take);
+		//if is an AreaDamage attack, dont spawn particles
+		if (!(dflags & DAMAGE_AREA)) {
+			if ((targ->svflags & SVF_MONSTER) || (client)) {
+				SpawnDamage(TE_BLOOD, point, normal, take);
+			}
+			else {
+				SpawnDamage(te_sparks, point, normal, take);
+			}
+		}
+
 
 
 		targ->health = targ->health - take;
 
 		// Here for extra life
-		Ressurect(targ);
+		Resurrect(targ);
 
 		if (targ->health <= 0)
 		{
@@ -660,22 +669,20 @@ T_AreaDamage
 */
 void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radius, int mod) 
 {
-	float	points;
 	edict_t* ent = NULL;
-	vec3_t	v;
 	vec3_t	dir;
 
 	while ((ent = findradius(ent, inflictor->s.origin, radius)) != NULL)
 	{
-		if (ent == inflictor || ent == attacker)
-			continue;
 		if (!ent->takedamage)
+			continue;
+		if (ent == attacker)
 			continue;
 
 		if (CanDamage(ent, inflictor))
 		{
 			VectorSubtract(ent->s.origin, inflictor->s.origin, dir);
-			T_Damage(ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, damage, damage, DAMAGE_RADIUS|DAMAGE_AREA, mod);
+			T_Damage(ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, damage, damage, DAMAGE_RADIUS | DAMAGE_AREA, mod);
 		}
 	}
 }
