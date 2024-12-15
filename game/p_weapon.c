@@ -1460,7 +1460,7 @@ void Pickaxe_Fire(edict_t* ent, vec3_t g_offset, int damage)
 
 	fire_pickaxe(ent, start, forward, damage, PICKAXE_KNOCKBACK);
 	if (ent->client->pers.master_pickaxe == true) {
-		if (ent->health == ent->max_health) {
+		if (ent->health >= ent->max_health) {
 			fire_master_pickaxe(ent, start, forward, damage, 1000, 120);
 		}
 	}
