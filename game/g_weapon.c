@@ -939,12 +939,9 @@ void fire_pickaxe(edict_t* self, vec3_t start, vec3_t aimdir, int damage, int ki
 	trace_t		tr;
 	vec3_t		end;
 
-	// MAGIC NUMBERS!!!!
-	const int Pickaxe_Range = 60;
-
 	int		mod = MOD_BLASTER;
 
-	VectorMA(start, Pickaxe_Range, aimdir, end);  //calculates the range vector
+	VectorMA(start, PICKAXE_RANGE, aimdir, end);  //calculates the range vector
 
 	tr = gi.trace(self->s.origin, NULL, NULL, end, self, MASK_SHOT);
 
@@ -1158,4 +1155,35 @@ void throw_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int spee
 		VectorMA(pickaxe->s.origin, -10, dir, pickaxe->s.origin);
 		pickaxe->touch(pickaxe, tr.ent, NULL, NULL);
 	}
+}
+
+/*
+=================
+shoulder_bash
+
+Used for Shoulder bash ability upgrade
+=================
+*/
+
+void shoulder_bash(edict_t* self, vec3_t start, vec3_t aimdir, int damage) {
+	trace_t		tr;
+	vec3_t		end;
+
+	int		mod = MOD_RAILGUN;
+
+	VectorMA(start, DASH_RANGE, aimdir, end);  //calculates the range vector
+
+	tr = gi.trace(self->s.origin, NULL, NULL, end, self, MASK_SHOT);
+
+	if (!((tr.surface) && (tr.surface->flags & SURF_SKY))) //dont hit the sky
+	{
+		if (tr.fraction < 1.0) //if we did hit something (if trace does not reach end)
+		{
+			if (tr.ent->takedamage) //if thing can take damage, damage it
+			{
+				T_Damage(tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, damage, DAMAGE_DASH, mod);
+			}
+		}
+	}
+	return;
 }

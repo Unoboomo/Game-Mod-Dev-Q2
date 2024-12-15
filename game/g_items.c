@@ -462,6 +462,14 @@ qboolean Pickup_Final_Stand(edict_t* ent, edict_t* other)
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
+
+qboolean Pickup_Shoulder_Bash(edict_t* ent, edict_t* other)
+{
+	other->client->pers.shoulder_bash = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
+
 //======================================================================
 
 void Use_Quad (edict_t *ent, gitem_t *item)
@@ -546,12 +554,11 @@ void	Use_Silencer (edict_t *ent, gitem_t *item)
 }
 
 //======================================================================
-
-//Use Relic
-void	Use_Relic(edict_t* ent, gitem_t* item) {
+void	UnderQuake_Use(edict_t* ent, gitem_t* item) {
 
 	ValidateSelectedItem(ent);
 }
+
 qboolean Pickup_Key (edict_t *ent, edict_t *other)
 {
 	if (coop->value)
@@ -2250,7 +2257,7 @@ heals 5% of damage dealt
 	{
 		"item_vampirism",
 		Pickup_Vampirism,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2274,7 +2281,7 @@ increases swing speed by 50%
 	{
 		"item_hyperstone",
 		Pickup_Hyperstone,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2298,7 +2305,7 @@ increased swing damage at lower health
 	{
 		"item_berserker's_pendant",
 		Pickup_Berserkers_Pendant,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2321,7 +2328,7 @@ when hit with a fatal blow, set health to max_health *.5
 	{
 		"item_resurrection",
 		Pickup_Resurrection,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2344,7 +2351,7 @@ At max health, when pickaxe is swung, also fires a nerfed bfg projectile
 	{
 		"item_master_pickaxe",
 		Pickup_Master_Pickaxe,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2367,7 +2374,7 @@ Increases thrown pickaxe speed by 80%
 	{
 		"item_sonic_boom",
 		Pickup_Sonic_Boom,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2390,7 +2397,7 @@ Increases Crit multiplier by 0.5
 	{
 		"item_dillon's_claw",
 		Pickup_Dillons_Claw,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2413,7 +2420,7 @@ Increases Crit chance by 50% multiplicatively
 	{
 		"item_shadow's_fang",
 		Pickup_Shadows_Fang,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2436,7 +2443,7 @@ Decreases damage taken by 25%
 	{
 		"item_hoodie's_pillow",
 		Pickup_Hoodies_Pillow,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2459,7 +2466,7 @@ Causes nearby enemies to be inflicted with minor fire damage (1-3 per second)
 	{
 		"item_large_ember",
 		Pickup_Large_Ember,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2505,7 +2512,7 @@ Every hit fills up the crit gauge. When full, pressing MOUSE3 causes the next at
 	{
 		"item_crit_gauge",
 		Pickup_Crit_Gauge,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2528,7 +2535,7 @@ Critical hits stun enemies
 	{
 		"item_critical_stun",
 		Pickup_Crit_Stun,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2551,7 +2558,7 @@ Consecutive successful attacks (attacks that hit) increase crit chance
 	{
 		"item_critical_stun",
 		Pickup_Crit_Combo,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2574,7 +2581,7 @@ Battle Cry reduces damage taken by 15%
 	{
 		"item_unyielding_resolve",
 		Pickup_Unyielding_Resolve,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2597,7 +2604,7 @@ Battle Cry increases damage mult by 2% for every monster in FURY_UNLEASHED_RADIU
 	{
 		"item_fury_unleashed",
 		Pickup_Fury_Unleashed,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2620,7 +2627,7 @@ Battle Cry increases duration at low health
 	{
 		"item_final_stand",
 		Pickup_Final_Stand,
-		Use_Relic,
+		UnderQuake_Use,
 		Drop_General,
 		NULL,
 		"items/pkup.wav",
@@ -2628,6 +2635,29 @@ Battle Cry increases duration at low health
 		NULL,
 		/* icon */		"p_adrenaline",
 		/* pickup */	"Final Stand",
+		/* width */		2,
+				0,
+				NULL,
+				IT_ABILITY_UPGRADE,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+/*UnderQuake item_shoulder_bash (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Dashes deal damage
+*/
+	{
+		"item_shoulder_bash",
+		Pickup_Shoulder_Bash,
+		UnderQuake_Use,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Shoulder Bash",
 		/* width */		2,
 				0,
 				NULL,

@@ -1448,9 +1448,6 @@ void Pickaxe_Fire(edict_t* ent, vec3_t g_offset, int damage)
 	vec3_t	start;
 	vec3_t	offset;
 
-	// MAGIC NUMBERS!!!!!
-	const int Pickaxe_Knockback = 200;
-
 	if (is_quad)
 		damage *= 4;
 	AngleVectors(ent->client->v_angle, forward, right, NULL);
@@ -1461,7 +1458,7 @@ void Pickaxe_Fire(edict_t* ent, vec3_t g_offset, int damage)
 	VectorScale(forward, -2, ent->client->kick_origin);
 	ent->client->kick_angles[0] = -1;
 
-	fire_pickaxe(ent, start, forward, damage, Pickaxe_Knockback);
+	fire_pickaxe(ent, start, forward, damage, PICKAXE_KNOCKBACK);
 	if (ent->client->pers.master_pickaxe == true) {
 		if (ent->health == ent->max_health) {
 			fire_master_pickaxe(ent, start, forward, damage, 1000, 120);
@@ -1473,14 +1470,10 @@ void Weapon_Pickaxe_Fire(edict_t* ent)
 {
 	int		damage;
 
-	// MAGIC NUMBERS!!!!!
-	const int Pickaxe_Normal_Damage = 30;
-	const int Pickaxe_DM_Damage = 45;
-
 	if (deathmatch->value)
-		damage = Pickaxe_DM_Damage;
+		damage = PICKAXE_DM_DAMAGE;
 	else
-		damage = Pickaxe_Normal_Damage;
+		damage = PICKAXE_NORMAL_DAMAGE;
 	Pickaxe_Fire(ent, vec3_origin, damage);
 	ent->client->ps.gunframe++;
 }

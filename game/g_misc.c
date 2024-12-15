@@ -1906,12 +1906,15 @@ void Dash(edict_t* ent, int dash_power)
 		else
 			mass = ent->mass;
 
+		//store the scale of the velocity before dashing, while velocity scale is above this, the player is dashing
+		ent->client->dash_threshold = VectorLength(ent->velocity);
+
 		VectorScale(forward, 1600.0 * (float)dash_power / mass, kvel);
 		VectorAdd(ent->velocity, kvel, ent->velocity);
-
+		ent->client->dashing = true;
 	}
-	
 }
+
 void Item_List_Bounds(int FLAG, int bounds[])
 {
 	int			i;
@@ -2266,6 +2269,43 @@ void UnderQuake_Server_Frame_Updates(edict_t* ent) {
 			client->last_dash_recharge = level.time;
 		}
 	}
+
+	//Check to see if the player is dashing
+	if (ent->client->dashing) {
+		if (VectorLength(ent->velocity) <= ent->client->dash_threshold) {
+			ent->client->dashing = false;
+			ent->client->dash_threshold = 0;
+
+			//if shoulder bash, do a bash attack
+			if (ent->client->pers.shoulder_bash) {
+				int damage;
+				vec3_t	offset;
+				vec3_t	_distance;
+				vec3_t	forward, right;
+				vec3_t	start;
+
+				damage = DASH_DAMAGE;
+
+				if (ent->client->quad_framenum > level.framenum)
+					damage *= 4;
+				AngleVectors(ent->client->v_angle, forward, right, NULL);
+				VectorSet(offset, 24, 8, ent->viewheight - 8);
+
+				VectorCopy(offset, _distance);
+				if (ent->client->pers.hand == LEFT_HANDED)
+					_distance[1] *= -1;
+				else if (ent->client->pers.hand == CENTER_HANDED)
+					_distance[1] = 0;
+				G_ProjectSource(ent->s.origin, _distance, forward, right, start);
+
+				VectorScale(forward, -2, ent->client->kick_origin);
+				ent->client->kick_angles[0] = -1;
+
+				shoulder_bash(ent, start, forward, DASH_DAMAGE);
+			}
+		}
+	}
+
 
 	//Critical Combo deterioration, decays by 0.01 every CRIT_COMBO_DECAY seconds
 	if (client->pers.crit_combo) {

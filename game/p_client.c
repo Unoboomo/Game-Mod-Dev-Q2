@@ -642,6 +642,7 @@ void InitClientPersistant (gclient_t *client)
 
 
 	client->pers.max_dashes = 1;
+	client->pers.shoulder_bash = false;
 
 	client->pers.crit_multiplier = 1.5;
 	client->pers.crit_chance = 0.08;

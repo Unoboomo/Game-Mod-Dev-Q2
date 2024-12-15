@@ -673,6 +673,7 @@ void T_RadiusDamage (edict_t *inflictor, edict_t *attacker, float damage, edict_
 #define DAMAGE_AREA				0x00000040 // Damage Caused by area damage, like Large Ember
 #define DAMAGE_SWUNG_PICKAXE	0x00000080 // Damage Caused by the swung pickaxe
 #define DAMAGE_THROWN_PICKAXE	0x00000100 // Damage Caused by the thrown pickaxe
+#define DAMAGE_DASH				0x00000200 // Damage Caused by the dash
 
 #define DEFAULT_BULLET_HSPREAD	300
 #define DEFAULT_BULLET_VSPREAD	500
@@ -750,6 +751,8 @@ void fire_master_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, in
 // declare throw pickaxe
 void throw_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean hyper);
 
+void shoulder_bash(edict_t* self, vec3_t start, vec3_t aimdir, int damage);
+
 //
 // g_ptrail.c
 //
@@ -776,6 +779,8 @@ void ClientBeginServerFrame (edict_t *ent);
 //
 void player_pain (edict_t *self, edict_t *other, float kick, int damage);
 void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point);
+void player_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);
+
 
 //
 // g_svcmds.c
@@ -896,6 +901,7 @@ typedef struct
 
 	//Dash
 	int max_dashes;
+	qboolean shoulder_bash;
 
 	//Crit System
 	float crit_multiplier;
@@ -1011,6 +1017,8 @@ struct gclient_s
 	//Dash Ability
 	int dashes;
 	float last_dash_recharge;
+	float dash_threshold;
+	qboolean dashing;
 
 	//Crit Ability
 	int crit_gauge;
@@ -1269,8 +1277,16 @@ void UnderQuake_Server_Frame_Updates(edict_t* ent);
 
 //UnderQuake Definitions
 #define MAX_RELICS	20
+#define PICKAXE_KNOCKBACK 200
+#define PICKAXE_NORMAL_DAMAGE 30
+#define PICKAXE_DM_DAMAGE 45
+#define PICKAXE_RANGE 60
+
 
 #define DASH_RECHARGE_TIME (float) 0.5
+#define DASH_DAMAGE 10
+#define DASH_RANGE 5
+
 #define FULL_CRIT_GAUGE 20
 #define CRIT_COMBO_DECAY 4
 
