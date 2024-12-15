@@ -1227,16 +1227,16 @@ void Item_List_Bounds(int FLAG, int bounds[]);
 
 /*
 * @brief populates a list with the indexes of all items with ITEM_FLAG, the rest of the list is filled with 0s
-* @param Takes an int array, an int pointer holding the number of indexes in the index_list, and the Flag of item type of the list
+* @param Takes an int array, an int pointer holding the number of indexes in the index_list, and the Flag of item type of the list, and an int of the number of that item allowed in an inventory
 */
-void Populate_Item_Index_List(int index_list[], int* index_list_length, int ITEM_FLAG);
+void Populate_Item_Index_List(int index_list[], int* index_list_length, int ITEM_FLAG, int number_allowed_in_inventory);
 
 /*
 * @brief Gets a random item classname from a list of item indexes
-* @param Takes an int array full of indexes of an item type in the item_list, an int pointer holding the number of indexes in the index_list, and a default item classname
+* @param Takes an int array full of indexes of an item type in the item_list, an int pointer holding the number of indexes in the index_list, and a default item classname and the Max of ITEM_TYPE
 * @return Returns a character pointer of an item classname
 */
-char* Random_Item_Classname(int index_list[], int* index_list_length, char* default_to);
+char* Random_Item_Classname(int index_list[], int* index_list_length, char* default_to, int MAX_ITEM);
 
 //Its RadiusDamage, but it doesnt care about distance from the inflictor
 void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radius, int dflags, int mod);
@@ -1307,6 +1307,7 @@ void Reset_Ricochet_Free(edict_t* ent);
 
 //UnderQuake Definitions
 #define MAX_RELICS	20
+#define MAX_ABILITY_UPGRADES 10
 
 #define PICKAXE_KNOCKBACK 200
 #define PICKAXE_NORMAL_DAMAGE 30

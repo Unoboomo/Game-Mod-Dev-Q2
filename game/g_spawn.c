@@ -535,16 +535,16 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 	int			relic_list[MAX_RELICS]; //change the size of this array if the number of relics exceeds 20
 	int			relic_list_length; //relative length of the relic_list, number of indexes of data used
 
+	int			ability_upgrade_list[MAX_ABILITY_UPGRADES]; // see above
+	int			ability_upgrade_list_length; // see above
+
 	int			weapon_count;
 	int			ammo_count;
 	int			powerup_count;
 	int			upgrade_count;
 	int			armor_count;
 
-	weapon_count = 0;
 	ammo_count = 0;
-	powerup_count = 0;
-	upgrade_count = 0;
 	armor_count = 0;
 
 	//get current time to random seed rand
@@ -553,7 +553,8 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 	rand_seed = ltime->tm_hour * 3600 + ltime->tm_min * 60 + ltime->tm_sec;
 	srand(rand_seed);
 	
-	Populate_Item_Index_List(relic_list, &relic_list_length, IT_RELIC);
+	Populate_Item_Index_List(relic_list, &relic_list_length, IT_RELIC, 1);
+	Populate_Item_Index_List(ability_upgrade_list, &ability_upgrade_list_length, IT_ABILITY_UPGRADE, 3);
 
 	skill_level = floor (skill->value);
 	if (skill_level < 0)
@@ -646,7 +647,6 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 			//swap weapons for relics
 			if (item_flags & IT_WEAPON) {
 
-				weapon_count++;
 				
 				if ((int)(random() * 3)) {
 					gi.dprintf("Nope\n");
@@ -655,7 +655,7 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 					continue;
 				}
 				
-				ent->classname = Random_Item_Classname(relic_list, &relic_list_length, "item_hot_cross_bun");
+				ent->classname = Random_Item_Classname(relic_list, &relic_list_length, "item_hot_cross_bun", MAX_RELICS);
 			}
 
 			if (item_flags & IT_AMMO) {
@@ -666,12 +666,16 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 				ammo_count++;
 			}
 
-			if (item_flags & IT_POWERUP) {
-				powerup_count++;
-			}
-
-			if (item_flags & IT_UPGRADE) {
-				upgrade_count++;
+			if (item_flags & (IT_POWERUP|IT_UPGRADE)) {
+				
+				if ((int)(random() * 2)) {
+					gi.dprintf("Nope\n");
+					G_FreeEdict(ent);
+					inhibit++;
+					continue;
+				}
+				
+				ent->classname = Random_Item_Classname(ability_upgrade_list, &ability_upgrade_list_length, "item_hot_cross_bun", MAX_ABILITY_UPGRADES);
 			}
 
 			if (item_flags & IT_ARMOR) {
@@ -698,10 +702,8 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 
 	PlayerTrail_Init ();
 
-	gi.dprintf("%d weapons\n", weapon_count);
 	gi.dprintf("%d ammo pickups\n", ammo_count);
-	gi.dprintf("%d powerups\n", powerup_count);
-	gi.dprintf("%d upgrades\n", upgrade_count);
+
 	gi.dprintf("%d armor\n", armor_count);
 
 }

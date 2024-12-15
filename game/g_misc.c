@@ -1918,34 +1918,40 @@ void Dash(edict_t* ent, int dash_power)
 void Item_List_Bounds(int FLAG, int bounds[])
 {
 	int			i;
-	int			list_start = 0;
-	int			list_end = 0;
+	int			list_start = -1;
+	int			list_end = -1;
 	gitem_t*	item;
 
 	//iterate through item list to find start and end indexes of the relic section
 	for (i = 0, item = itemlist; i < game.num_items; i++, item++)
 	{
+		// Skip NULL entries.
 		if (!item->classname) {
 			continue;
 		}
-		if (item->flags & FLAG && !list_start)
-		{	// found start of Relic List
+
+		// Set the start of the flagged items if not already set.
+		if ((item->flags & FLAG) && list_start == -1)
+		{
 			list_start = ITEM_INDEX(item);
 		}
-		if (!(item->flags & FLAG) && list_start) {
-			// if not a relic and there is list_start, the item before was a relic
-			list_end = ITEM_INDEX(item) - 1;
+
+		// Update the end of the flagged items as long as the flag matches.
+		if ((item->flags & FLAG) && list_start != -1)
+		{
+			list_end = ITEM_INDEX(item);
 		}
-	}
-	//if through the whole list and no listend, a relic is the second to last item
-	if (!list_end) {
-		list_end = game.num_items - 1;
+		// Exit early if we've moved past the flagged group.
+		else if (!(item->flags & FLAG) && list_start != -1)
+		{
+			break;
+		}
 	}
 	bounds[0] = list_start;
 	bounds[1] = list_end;
 }
 
-void Populate_Item_Index_List(int index_list[], int* index_list_length, int ITEM_FLAG)
+void Populate_Item_Index_List(int index_list[], int* index_list_length, int ITEM_FLAG, int number_allowed_in_inventory)
 {
 	edict_t*	ent_list;
 	int			item_bounds[2];
@@ -1976,7 +1982,7 @@ void Populate_Item_Index_List(int index_list[], int* index_list_length, int ITEM
 		for (int j = 0; j < game.maxclients; j++)
 		{
 			ent_list = &g_edicts[1 + j];
-			if (game.clients[j].pers.inventory[index_list[i]] > 0) {
+			if (game.clients[j].pers.inventory[index_list[i]] > number_allowed_in_inventory - 1) {
 				gi.dprintf("%d is already in a player inventory\n", index_list[i]);
 				for (int k = i; k < list_length; k++) {
 					if ((k + 1) < list_length) {
@@ -1994,7 +2000,7 @@ void Populate_Item_Index_List(int index_list[], int* index_list_length, int ITEM
 	}
 }
 
-char* Random_Item_Classname(int index_list[], int *index_list_length, char* default_to)
+char* Random_Item_Classname(int index_list[], int *index_list_length, char* default_to, int MAX_ITEM)
 {
 	int			rand_index;
 	gitem_t		*item;
@@ -2006,7 +2012,7 @@ char* Random_Item_Classname(int index_list[], int *index_list_length, char* defa
 	gi.dprintf("%d is random\n", index_list[rand_index]);
 
 	if (index_list[rand_index] == 0) {	//no more relics
-		gi.dprintf("no more relics\n");
+		gi.dprintf("no more ITEM_TYPE\n");
 		gi.dprintf("changed classname to %s\n", default_to);
 		return default_to;
 	}
@@ -2018,7 +2024,7 @@ char* Random_Item_Classname(int index_list[], int *index_list_length, char* defa
 		if (item) {
 			gi.dprintf("changed classname to %s\n", item->classname);
 			//remove index of spawned item from list, so to not have duplicates
-			for (int i = rand_index; i < MAX_RELICS - 1; i++) {
+			for (int i = rand_index; i < MAX_ITEM - 1; i++) {
 				index_list[i] = index_list[i + 1];
 			}
 			(*index_list_length)--;
