@@ -1313,6 +1313,7 @@ void Reset_Ricochet_Free(edict_t* ent);
 //UnderQuake Definitions
 #define MAX_RELICS	20
 #define MAX_ABILITY_UPGRADES 10
+#define MAX_BLESSINGS 5
 
 #define PICKAXE_KNOCKBACK 200
 #define PICKAXE_NORMAL_DAMAGE 30

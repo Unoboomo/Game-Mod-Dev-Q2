@@ -2008,8 +2008,6 @@ char* Random_Item_Classname(int index_list[], int *index_list_length, char* defa
 	//get a random index between the start and end inclusive of the section in relic_list where there are relic indexes 
 	rand_index = random() * *index_list_length;
 
-	gi.dprintf("%d is random\n", rand_index);
-	gi.dprintf("%d is random\n", index_list[rand_index]);
 
 	if (index_list[rand_index] == 0) {	//no more relics
 		gi.dprintf("no more ITEM_TYPE\n");
@@ -2022,13 +2020,12 @@ char* Random_Item_Classname(int index_list[], int *index_list_length, char* defa
 		//change classname of entity to relic classname
 		item = GetItemByIndex(index_list[rand_index]);
 		if (item) {
-			gi.dprintf("changed classname to %s\n", item->classname);
+			gi.dprintf("%s\n", item->pickup_name);
 			//remove index of spawned item from list, so to not have duplicates
 			for (int i = rand_index; i < MAX_ITEM - 1; i++) {
 				index_list[i] = index_list[i + 1];
 			}
 			(*index_list_length)--;
-			gi.dprintf("%d is index_list_length\n", *index_list_length);
 			return item->classname;
 		}
 		//rand_index is out of bounds, return NULL so no entity spawns

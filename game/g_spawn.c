@@ -538,14 +538,11 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 	int			ability_upgrade_list[MAX_ABILITY_UPGRADES]; // see above
 	int			ability_upgrade_list_length; // see above
 
-	int			weapon_count;
-	int			ammo_count;
-	int			powerup_count;
-	int			upgrade_count;
-	int			armor_count;
+	int			blessing_list[MAX_BLESSINGS]; //see above
+	int			blessing_bounds[2];
+	int			blessing_list_length;
+	
 
-	ammo_count = 0;
-	armor_count = 0;
 
 	//get current time to random seed rand
 	time(&gmtime);
@@ -555,6 +552,20 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 	
 	Populate_Item_Index_List(relic_list, &relic_list_length, IT_RELIC, 1);
 	Populate_Item_Index_List(ability_upgrade_list, &ability_upgrade_list_length, IT_ABILITY_UPGRADE, 3);
+	//Blessing list is different than the other two, we can get an unlimited number of blessings, so no need to remove from the list
+	Item_List_Bounds(IT_BLESSING, blessing_bounds);
+	gi.dprintf("%d, %d are the bounds\n", blessing_bounds[0], blessing_bounds[1]);
+
+	//initialize and populate item_list with indexes of all items of flag IT_BLESSING in blessing_list
+	blessing_list_length =  sizeof(blessing_list) / sizeof(blessing_list[0]);
+	for (i = 0; i < blessing_list_length; i++) {
+		blessing_list[i] = 0;
+	}
+	blessing_list_length = 0;
+	for (i = 0; i <= (blessing_bounds[1] - blessing_bounds[0]); i++) {
+		blessing_list[i] = blessing_bounds[0] + i;
+		blessing_list_length++;
+	}
 
 	skill_level = floor (skill->value);
 	if (skill_level < 0)
@@ -649,7 +660,7 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 
 				
 				if ((int)(random() * 3)) {
-					gi.dprintf("Nope\n");
+					gi.dprintf("Nope Relic\n");
 					G_FreeEdict(ent);
 					inhibit++;
 					continue;
@@ -659,17 +670,32 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 			}
 
 			if (item_flags & IT_AMMO) {
+				int rand_index;
 				//grenades have IT_AMMO|IT_WEAPON, only want to count them as a weapon
 				if (item_flags & IT_WEAPON) {
 					continue;
 				}
-				ammo_count++;
+				if ((int)(random() * 6)) {
+					gi.dprintf("Nope Blessing\n");
+					G_FreeEdict(ent);
+					inhibit++;
+					continue;
+				}
+				rand_index = random() * blessing_list_length;
+
+				//change classname of entity to relic classname
+				item = GetItemByIndex(blessing_list[rand_index]);
+				if (item) {
+					ent->classname = item->classname;
+					gi.dprintf("%s\n", item->pickup_name);
+
+				}
 			}
 
 			if (item_flags & (IT_POWERUP|IT_UPGRADE)) {
 				
 				if ((int)(random() * 2)) {
-					gi.dprintf("Nope\n");
+					gi.dprintf("Nope Ability Upgrade\n");
 					G_FreeEdict(ent);
 					inhibit++;
 					continue;
@@ -679,7 +705,6 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 			}
 
 			if (item_flags & IT_ARMOR) {
-				armor_count++;
 			}
 		}
 		
@@ -701,11 +726,6 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 	G_FindTeams ();
 
 	PlayerTrail_Init ();
-
-	gi.dprintf("%d ammo pickups\n", ammo_count);
-
-	gi.dprintf("%d armor\n", armor_count);
-
 }
 
 
