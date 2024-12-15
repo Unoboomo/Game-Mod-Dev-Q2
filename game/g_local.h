@@ -899,6 +899,7 @@ typedef struct
 
 	//Pickaxe
 	qboolean ricochet;
+	qboolean momentous_fling;
 
 	//Dash
 	int max_dashes;

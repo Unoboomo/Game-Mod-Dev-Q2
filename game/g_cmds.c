@@ -962,14 +962,22 @@ void Cmd_Throw_f(edict_t* ent)
 	damage = THROWN_PICKAXE_DAMAGE;
 	throw_speed = PICKAXE_THROW_SPEED;
 
+
 	//additive damage and speed changes
 
 	//multiplicative damage and speed changes
+	
+	//Sonic Boom
 	if (ent->client->pers.sonic) {
-		throw_speed *= 1.8;
+		throw_speed += (0.8 * PICKAXE_THROW_SPEED);
 	}
-
-
+	
+	//momentous speed ability upgrade
+	if (ent->client->dashing && ent->client->pers.momentous_fling) {
+		throw_speed += (0.5 * PICKAXE_THROW_SPEED);
+		damage += (0.25 * THROWN_PICKAXE_DAMAGE);
+	}
+	
 	if (ent->client->quad_framenum > level.framenum)
 		damage *= 4;
 	AngleVectors(ent->client->v_angle, forward, right, NULL);

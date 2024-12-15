@@ -421,75 +421,85 @@ qboolean Pickup_Hot_Cross_Bun(edict_t* ent, edict_t* other)
 
 //UnderQuake Ability Upgrade Pickups
 
-qboolean Pickup_Crit_Gauge(edict_t* ent, edict_t* other)
+qboolean Pickup_Crit_Upgrade(edict_t* ent, edict_t* other)
 {
-	other->client->pers.crit_gauge = true;
+	int count = other->client->pers.inventory[ITEM_INDEX(ent->item)];
+	if (count == 0) {
+		other->client->pers.crit_gauge = true;
+		gi.dprintf("Crit Gauge Active\n");
+	}
+	else if (count == 1) {
+		other->client->pers.crit_stun = true;
+		gi.dprintf("Critical Stun Active\n");
+
+	}
+	else if (count == 2) {
+		other->client->pers.crit_combo = true;
+		gi.dprintf("Critical Combo Active\n");
+	}
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
 
-qboolean Pickup_Crit_Stun(edict_t* ent, edict_t* other)
+qboolean Pickup_Battle_Cry_Upgrade(edict_t* ent, edict_t* other) 
 {
-	other->client->pers.crit_stun = true;
+	int count = other->client->pers.inventory[ITEM_INDEX(ent->item)];
+	if (count == 0) {
+		other->client->pers.resolve = true;
+		gi.dprintf("Unyielding Resolve Active\n");
+	}
+	else if (count == 1) {
+		other->client->pers.unleashed = true;
+		gi.dprintf("Fury Unleashed Active\n");
+
+	}
+	else  if (count == 2) {
+		other->client->pers.final_stand = true;
+		gi.dprintf("Final Stand Active\n");
+	}
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
 
-qboolean Pickup_Crit_Combo(edict_t* ent, edict_t* other)
+qboolean Pickup_Dash_Upgrade(edict_t* ent, edict_t* other)
 {
-	other->client->pers.crit_combo = true;
+	int count = other->client->pers.inventory[ITEM_INDEX(ent->item)];
+	if (count == 0) {
+		other->client->pers.max_dashes++;
+		gi.dprintf("Double Dash Active\n");
+	}
+	else if (count == 1) {
+		other->client->pers.shoulder_bash = true;
+		gi.dprintf("Shoulder Bash Active\n");
+
+	}
+	else  if (count == 2) {
+		other->client->pers.shield_dash = true;
+		gi.dprintf("Shield Dash Active\n");
+	}
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
 
-qboolean Pickup_Unyielding_Resolve(edict_t* ent, edict_t* other)
+qboolean Pickup_Thrown_Pickaxe_Upgrade(edict_t* ent, edict_t* other)
 {
-	other->client->pers.resolve = true;
+	int count = other->client->pers.inventory[ITEM_INDEX(ent->item)];
+	if (count == 0) {
+	
+	}
+	else if (count == 1) {
+		other->client->pers.momentous_fling = true;
+		gi.dprintf("Momentous Fling Active\n");
+
+	}
+	else  if (count == 2) {
+		other->client->pers.ricochet = true;
+		gi.dprintf("Ricochet Active\n");
+	}
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
 
-qboolean Pickup_Fury_Unleashed(edict_t* ent, edict_t* other)
-{
-	other->client->pers.unleashed = true;
-	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
-	return true;
-}
-
-qboolean Pickup_Final_Stand(edict_t* ent, edict_t* other)
-{
-	other->client->pers.final_stand = true;
-	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
-	return true;
-}
-
-qboolean Pickup_Shoulder_Bash(edict_t* ent, edict_t* other)
-{
-	other->client->pers.shoulder_bash = true;
-	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
-	return true;
-}
-
-qboolean Pickup_Shield_Dash(edict_t* ent, edict_t* other)
-{
-	other->client->pers.shield_dash = true;
-	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
-	return true;
-}
-
-qboolean Pickup_Double_Dash(edict_t* ent, edict_t* other)
-{
-	other->client->pers.max_dashes ++;
-	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
-	return true;
-}
-
-qboolean Pickup_Ricochet(edict_t* ent, edict_t* other)
-{
-	other->client->pers.ricochet = true;
-	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
-	return true;
-}
 //======================================================================
 
 void Use_Quad (edict_t *ent, gitem_t *item)
@@ -2526,12 +2536,14 @@ increased max hp by 1
 				0,
 				/* precache */ ""
 	},
-/*UnderQuake item_crit_gauge (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-Every hit fills up the crit gauge. When full, pressing MOUSE3 causes the next attack to crit
+/*UnderQuake item_crit_upgrade (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+1. Every hit fills up the crit gauge. When full, pressing MOUSE3 causes the next attack to crit
+2. Critical hits stun enemies
+3. Consecutive successful attacks (attacks that hit) increase crit chance
 */
 	{
-		"item_crit_gauge",
-		Pickup_Crit_Gauge,
+		"item_crit_upgrade",
+		Pickup_Crit_Upgrade,
 		UnderQuake_Use,
 		Drop_General,
 		NULL,
@@ -2539,7 +2551,7 @@ Every hit fills up the crit gauge. When full, pressing MOUSE3 causes the next at
 		"models/items/adrenal/tris.md2", EF_ROTATE,
 		NULL,
 		/* icon */		"p_adrenaline",
-		/* pickup */	"Crit Gauge",
+		/* pickup */	"Crit Upgrade",
 		/* width */		2,
 				0,
 				NULL,
@@ -2549,12 +2561,14 @@ Every hit fills up the crit gauge. When full, pressing MOUSE3 causes the next at
 				0,
 				/* precache */ ""
 	},
-/*UnderQuake item_critical_stun (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-Critical hits stun enemies
+/*UnderQuake item_battle_cry_upgrade (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Unyielding_Resolve - Battle Cry reduces damage taken by 15%
+Fury_Unleashed - Battle Cry increases damage mult by 2% for every monster in FURY_UNLEASHED_RADIUS
+Final_Stand - Battle Cry increases duration at low health
 */
 	{
-		"item_critical_stun",
-		Pickup_Crit_Stun,
+		"item_battle_cry_upgrade",
+		Pickup_Battle_Cry_Upgrade,
 		UnderQuake_Use,
 		Drop_General,
 		NULL,
@@ -2562,7 +2576,7 @@ Critical hits stun enemies
 		"models/items/adrenal/tris.md2", EF_ROTATE,
 		NULL,
 		/* icon */		"p_adrenaline",
-		/* pickup */	"Critical Stun",
+		/* pickup */	"Battle Cry Upgrade",
 		/* width */		2,
 				0,
 				NULL,
@@ -2572,12 +2586,14 @@ Critical hits stun enemies
 				0,
 				/* precache */ ""
 	},
-/*UnderQuake item_critical_combo (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-Consecutive successful attacks (attacks that hit) increase crit chance
+/*UnderQuake item_dash_upgrade (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Shoulder Bash - Dashes deal damage
+Double Dash Gain a second dash
+Shield Dash - Take 5% reduced damage while dashing
 */
 	{
-		"item_critical_stun",
-		Pickup_Crit_Combo,
+		"item_dash_upgrade",
+		Pickup_Dash_Upgrade,
 		UnderQuake_Use,
 		Drop_General,
 		NULL,
@@ -2585,7 +2601,7 @@ Consecutive successful attacks (attacks that hit) increase crit chance
 		"models/items/adrenal/tris.md2", EF_ROTATE,
 		NULL,
 		/* icon */		"p_adrenaline",
-		/* pickup */	"Critical Combo",
+		/* pickup */	"Dash Upgrade",
 		/* width */		2,
 				0,
 				NULL,
@@ -2595,12 +2611,14 @@ Consecutive successful attacks (attacks that hit) increase crit chance
 				0,
 				/* precache */ ""
 	},
-/*UnderQuake item_unyielding_resolve (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-Battle Cry reduces damage taken by 15%
+/*UnderQuake item_thrown_pickaxe_upgrade (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+
+Momentous Fling - pickaxes thrown while dashing are faster and deal more damage
+Ricochet - causes the pickaxe to ricochet to nearby enemies
 */
 	{
-		"item_unyielding_resolve",
-		Pickup_Unyielding_Resolve,
+		"item_thrown_pickaxe_upgrade",
+		Pickup_Thrown_Pickaxe_Upgrade,
 		UnderQuake_Use,
 		Drop_General,
 		NULL,
@@ -2608,145 +2626,7 @@ Battle Cry reduces damage taken by 15%
 		"models/items/adrenal/tris.md2", EF_ROTATE,
 		NULL,
 		/* icon */		"p_adrenaline",
-		/* pickup */	"Unyielding Resolve",
-		/* width */		2,
-				0,
-				NULL,
-				IT_ABILITY_UPGRADE,
-				0,
-				NULL,
-				0,
-				/* precache */ ""
-	},
-/*UnderQuake item_fury_unleashed (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-Battle Cry increases damage mult by 2% for every monster in FURY_UNLEASHED_RADIUS
-*/
-	{
-		"item_fury_unleashed",
-		Pickup_Fury_Unleashed,
-		UnderQuake_Use,
-		Drop_General,
-		NULL,
-		"items/pkup.wav",
-		"models/items/adrenal/tris.md2", EF_ROTATE,
-		NULL,
-		/* icon */		"p_adrenaline",
-		/* pickup */	"Fury Unleashed",
-		/* width */		2,
-				0,
-				NULL,
-				IT_ABILITY_UPGRADE,
-				0,
-				NULL,
-				0,
-				/* precache */ ""
-	},
-/*UnderQuake item_final_stand (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-Battle Cry increases duration at low health
-*/
-	{
-		"item_final_stand",
-		Pickup_Final_Stand,
-		UnderQuake_Use,
-		Drop_General,
-		NULL,
-		"items/pkup.wav",
-		"models/items/adrenal/tris.md2", EF_ROTATE,
-		NULL,
-		/* icon */		"p_adrenaline",
-		/* pickup */	"Final Stand",
-		/* width */		2,
-				0,
-				NULL,
-				IT_ABILITY_UPGRADE,
-				0,
-				NULL,
-				0,
-				/* precache */ ""
-	},
-/*UnderQuake item_shoulder_bash (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-Dashes deal damage
-*/
-	{
-		"item_shoulder_bash",
-		Pickup_Shoulder_Bash,
-		UnderQuake_Use,
-		Drop_General,
-		NULL,
-		"items/pkup.wav",
-		"models/items/adrenal/tris.md2", EF_ROTATE,
-		NULL,
-		/* icon */		"p_adrenaline",
-		/* pickup */	"Shoulder Bash",
-		/* width */		2,
-				0,
-				NULL,
-				IT_ABILITY_UPGRADE,
-				0,
-				NULL,
-				0,
-				/* precache */ ""
-	},
-/*UnderQuake item_shield_dash (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-Take 5% reduced damage while dashing
-*/
-	{
-		"item_shield_dash",
-		Pickup_Shield_Dash,
-		UnderQuake_Use,
-		Drop_General,
-		NULL,
-		"items/pkup.wav",
-		"models/items/adrenal/tris.md2", EF_ROTATE,
-		NULL,
-		/* icon */		"p_adrenaline",
-		/* pickup */	"Shield Dash",
-		/* width */		2,
-				0,
-				NULL,
-				IT_ABILITY_UPGRADE,
-				0,
-				NULL,
-				0,
-				/* precache */ ""
-	},
-/*UnderQuake item_double_dash (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-Gain a second dash
-*/
-	{
-		"item_double_dash",
-		Pickup_Double_Dash,
-		UnderQuake_Use,
-		Drop_General,
-		NULL,
-		"items/pkup.wav",
-		"models/items/adrenal/tris.md2", EF_ROTATE,
-		NULL,
-		/* icon */		"p_adrenaline",
-		/* pickup */	"Double Dash",
-		/* width */		2,
-				0,
-				NULL,
-				IT_ABILITY_UPGRADE,
-				0,
-				NULL,
-				0,
-				/* precache */ ""
-	},
-/*UnderQuake item_ricochet (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-Gain a second dash
-*/
-	{
-		"item_ricochet",
-		Pickup_Ricochet,
-		UnderQuake_Use,
-		Drop_General,
-		NULL,
-		"items/pkup.wav",
-		"models/items/adrenal/tris.md2", EF_ROTATE,
-		NULL,
-		/* icon */		"p_adrenaline",
-		/* pickup */	"Ricochet",
+		/* pickup */	"Thrown Pickaxe Upgrade",
 		/* width */		2,
 				0,
 				NULL,

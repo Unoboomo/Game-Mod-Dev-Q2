@@ -641,6 +641,8 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.ember = false;
 
 	client->pers.ricochet = false;
+	client->pers.momentous_fling = false;
+
 
 	client->pers.max_dashes = 1;
 	client->pers.shoulder_bash = false;
