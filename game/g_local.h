@@ -749,7 +749,7 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 void fire_pickaxe(edict_t* self, vec3_t start, vec3_t aimdir, int damage, int kick);
 void fire_master_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius); 
 // declare throw pickaxe
-void throw_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean hyper);
+void throw_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean original);
 
 void shoulder_bash(edict_t* self, vec3_t start, vec3_t aimdir, int damage);
 
@@ -779,8 +779,6 @@ void ClientBeginServerFrame (edict_t *ent);
 //
 void player_pain (edict_t *self, edict_t *other, float kick, int damage);
 void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point);
-void player_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);
-
 
 //
 // g_svcmds.c
@@ -898,6 +896,9 @@ typedef struct
 
 
 	//Persistant Data for Underquake Abilities
+
+	//Pickaxe
+	qboolean ricochet;
 
 	//Dash
 	int max_dashes;
@@ -1185,6 +1186,9 @@ struct edict_s
 	// common data blocks
 	moveinfo_t		moveinfo;
 	monsterinfo_t	monsterinfo;
+
+	// for ricochet thrown pickaxe ability upgrade
+	qboolean		ricocheted;
 };
 
 /*
@@ -1276,13 +1280,29 @@ void Resurrect(edict_t* targ);
 */
 void UnderQuake_Server_Frame_Updates(edict_t* ent);
 
+/*
+* @brief Sets all entities->ricochet to false
+*/
+void Reset_Ricochet_Flags(void);
+
+/*
+* @brief Sets all entities->ricochet to false, then frees the ent
+* @param Takes a pointer to the target ent (client)
+*/
+void Reset_Ricochet_Free(edict_t* ent);
+
 //UnderQuake Definitions
 #define MAX_RELICS	20
+
 #define PICKAXE_KNOCKBACK 200
 #define PICKAXE_NORMAL_DAMAGE 30
 #define PICKAXE_DM_DAMAGE 45
 #define PICKAXE_RANGE 60
 
+#define THROWN_PICKAXE_DAMAGE 20
+#define PICKAXE_THROW_SPEED 1000
+#define RICOCHET_RADIUS 500
+#define SPAWNFLAG_ORIGINAL_PICKAXE 1
 
 #define DASH_RECHARGE_TIME (float) 0.5
 #define DASH_DAMAGE 10

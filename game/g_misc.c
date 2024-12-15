@@ -2041,7 +2041,6 @@ void Reset_Combo(edict_t* ent) {
 			}
 		}
 	}
-	
 	G_FreeEdict(ent);
 }
 
@@ -2333,4 +2332,24 @@ void UnderQuake_Server_Frame_Updates(edict_t* ent) {
 			T_AreaDamage(ent, ent, (int)(random() * 3) + 1,  300, MOD_UNKNOWN);
 		}
 	}
+}
+
+void Reset_Ricochet_Flags(void) {
+	edict_t* from = g_edicts;
+
+	for (; from < &g_edicts[globals.num_edicts]; from++)
+	{
+		if (!from->inuse)
+			continue;
+		if (from->solid == SOLID_NOT)
+			continue;
+		if (from->ricocheted) {
+			from->ricocheted = false;
+		}
+	}
+}
+
+void Reset_Ricochet_Free(edict_t* ent) {
+	Reset_Ricochet_Flags();
+	G_FreeEdict(ent);
 }

@@ -1070,15 +1070,31 @@ Used for pickaxe throw command
 */
 void pickaxe_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf)
 {
-	int		mod;
+	qboolean isOriginalPickaxe;
+	if (self->spawnflags & SPAWNFLAG_ORIGINAL_PICKAXE)
+		isOriginalPickaxe = true;
+	else
+		isOriginalPickaxe = false;
 
 	if (other == self->owner)
 		return;
+	//if the pickaxe hits an entity they already hit, ignore
+	if (!isOriginalPickaxe) {
+		if (other->ricocheted) {
+			return;
+		}
+	}
 
 	if (surf && (surf->flags & SURF_SKY))
 	{
-		//attack missed, reset combo if able and free self
-		Reset_Combo(self);
+		if (isOriginalPickaxe) {
+			//attack missed, original pickaxe, reset combo if able and free self
+			Reset_Combo(self);
+		}
+		else {
+			//attack missed, a ricochet, so dont reset combo, just reset flags and free
+			Reset_Ricochet_Free(self);
+		}
 		return;
 	}
 
@@ -1087,11 +1103,37 @@ void pickaxe_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* s
 
 	if (other->takedamage)
 	{
-		if (self->spawnflags & 1)
-			mod = MOD_HYPERBLASTER;
-		else
-			mod = MOD_BLASTER;
-		T_Damage(other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_THROWN_PICKAXE, mod);
+
+		T_Damage(other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_THROWN_PICKAXE, MOD_UNKNOWN);
+
+		if (self->owner->client) {
+			//ricochet logic
+			if (self->owner->client->pers.ricochet) {
+				edict_t* ent = NULL;
+				vec3_t	dir;
+				//find an entity within radius that is not the projectile or its owner and can take damage
+				while ((ent = findradius(ent, self->s.origin, RICOCHET_RADIUS)) != NULL)
+				{
+					if (!ent->takedamage || ent->svflags & SVF_DEADMONSTER || ent->ricocheted || ent == self || ent == self->owner)
+						continue;
+
+					if (CanDamage(ent, self))
+					{
+						break;
+					}
+				}
+				//if the entity exists, it can be damaged, so throw a pickaxe at it
+				if (ent != NULL) {
+					ent->ricocheted = true;
+					VectorSubtract(ent->s.origin, self->s.origin, dir);
+					throw_pickaxe(ent, self->s.origin, dir, THROWN_PICKAXE_DAMAGE, PICKAXE_THROW_SPEED, EF_BLASTER, false);
+				}
+				//if the entity is null, there are no more entities to ricochet to, reset ricocheted flags
+				else {
+					Reset_Ricochet_Flags();
+				}
+			}
+		}
 		//attack hit, just free self
 		G_FreeEdict(self);
 	}
@@ -1105,12 +1147,18 @@ void pickaxe_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* s
 		else
 			gi.WriteDir(plane->normal);
 		gi.multicast(self->s.origin, MULTICAST_PVS);
-		//attack missed, reset combo if able and free self
-		Reset_Combo(self);
+		if (isOriginalPickaxe) {
+			//attack missed, original pickaxe, reset combo if able and free self
+			Reset_Combo(self);
+		}
+		else {
+			//attack missed, a ricochet, so dont reset combo, just reset flags and free
+			Reset_Ricochet_Free(self);
+		}
 	}
 }
 
-void throw_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean hyper)
+void throw_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean original)
 {
 	edict_t* pickaxe;
 	trace_t	tr;
@@ -1142,8 +1190,11 @@ void throw_pickaxe(edict_t* self, vec3_t start, vec3_t dir, int damage, int spee
 	pickaxe->think = Reset_Combo;
 	pickaxe->dmg = damage;
 	pickaxe->classname = "pickaxe";
-	if (hyper)
-		pickaxe->spawnflags = 1;
+	if (original)
+		pickaxe->spawnflags = SPAWNFLAG_ORIGINAL_PICKAXE;
+	else {
+		pickaxe->think = Reset_Ricochet_Free;
+	}
 	gi.linkentity(pickaxe);
 
 	if (self->client)

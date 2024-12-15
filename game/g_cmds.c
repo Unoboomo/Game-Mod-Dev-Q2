@@ -959,8 +959,8 @@ void Cmd_Throw_f(edict_t* ent)
 	}
 
 
-	damage = 20;
-	throw_speed = 1000;
+	damage = THROWN_PICKAXE_DAMAGE;
+	throw_speed = PICKAXE_THROW_SPEED;
 
 	//additive damage and speed changes
 
@@ -985,7 +985,7 @@ void Cmd_Throw_f(edict_t* ent)
 	VectorScale(forward, -2, ent->client->kick_origin);
 	ent->client->kick_angles[0] = -1;
 
-	throw_pickaxe(ent, start, forward, damage, throw_speed, false, EF_BLASTER);
+	throw_pickaxe(ent, start, forward, damage, throw_speed, EF_BLASTER, true);
 	gi.WriteByte(svc_muzzleflash);
 	gi.WriteShort(ent - g_edicts);
 	gi.WriteByte(MZ_BLASTER);
