@@ -900,6 +900,7 @@ typedef struct
 	//Pickaxe
 	qboolean ricochet;
 	qboolean momentous_fling;
+	qboolean nuclear;
 
 	//Dash
 	int max_dashes;
@@ -1226,7 +1227,7 @@ void Populate_Item_Index_List(int index_list[], int* index_list_length, int ITEM
 char* Random_Item_Classname(int index_list[], int* index_list_length, char* default_to);
 
 //Its RadiusDamage, but it doesnt care about distance from the inflictor
-void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radius, int mod);
+void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radius, int dflags, int mod);
 
 /*
 * @brief Resets the crit_combo of the player that owns ent, then frees ent
@@ -1304,6 +1305,7 @@ void Reset_Ricochet_Free(edict_t* ent);
 #define PICKAXE_THROW_SPEED 1000
 #define RICOCHET_RADIUS 500
 #define SPAWNFLAG_ORIGINAL_PICKAXE 1
+#define THE_NUCLEAR_OPTION_RADIUS 100
 
 #define DASH_RECHARGE_TIME (float) 0.5
 #define DASH_DAMAGE 10

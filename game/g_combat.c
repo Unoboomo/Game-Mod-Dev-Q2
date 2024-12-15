@@ -667,7 +667,7 @@ void T_RadiusDamage (edict_t *inflictor, edict_t *attacker, float damage, edict_
 T_AreaDamage
 ============
 */
-void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radius, int mod) 
+void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radius, int dflags, int mod) 
 {
 	edict_t* ent = NULL;
 	vec3_t	dir;
@@ -682,7 +682,7 @@ void T_AreaDamage(edict_t* inflictor, edict_t* attacker, int damage, float radiu
 		if (CanDamage(ent, inflictor))
 		{
 			VectorSubtract(ent->s.origin, inflictor->s.origin, dir);
-			T_Damage(ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, damage, damage, DAMAGE_RADIUS | DAMAGE_AREA, mod);
+			T_Damage(ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, damage, damage, DAMAGE_RADIUS | dflags, mod);
 		}
 	}
 }

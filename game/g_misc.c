@@ -2329,7 +2329,7 @@ void UnderQuake_Server_Frame_Updates(edict_t* ent) {
 	//Large Ember DOT to surrounding enemies
 	if (client->pers.ember) {
 		if ((int)(level.time * 10) % 10 == 0) {
-			T_AreaDamage(ent, ent, (int)(random() * 3) + 1,  300, MOD_UNKNOWN);
+			T_AreaDamage(ent, ent, (int)(random() * 3) + 1,  300, DAMAGE_AREA, MOD_UNKNOWN);
 		}
 	}
 }

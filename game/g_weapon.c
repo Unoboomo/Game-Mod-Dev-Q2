@@ -1103,7 +1103,21 @@ void pickaxe_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* s
 
 	if (other->takedamage)
 	{
-
+		if (self->owner->client) {
+			//The Nuclear Option Ability Upgrade
+			if (self->owner->client->pers.nuclear) {
+				vec3_t		origin;
+				VectorMA(self->s.origin, -0.02, self->velocity, origin);
+				T_AreaDamage(self, self->owner, (self->dmg / 4), THE_NUCLEAR_OPTION_RADIUS, DAMAGE_THROWN_PICKAXE, MOD_UNKNOWN);
+				gi.WriteByte(svc_temp_entity);
+				if (self->waterlevel)
+					gi.WriteByte(TE_ROCKET_EXPLOSION_WATER);
+				else
+					gi.WriteByte(TE_ROCKET_EXPLOSION);
+				gi.WritePosition(origin);
+				gi.multicast(self->s.origin, MULTICAST_PHS);
+			}
+		}
 		T_Damage(other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_THROWN_PICKAXE, MOD_UNKNOWN);
 
 		if (self->owner->client) {

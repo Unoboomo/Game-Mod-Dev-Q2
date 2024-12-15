@@ -485,16 +485,16 @@ qboolean Pickup_Thrown_Pickaxe_Upgrade(edict_t* ent, edict_t* other)
 {
 	int count = other->client->pers.inventory[ITEM_INDEX(ent->item)];
 	if (count == 0) {
-	
-	}
-	else if (count == 1) {
 		other->client->pers.momentous_fling = true;
 		gi.dprintf("Momentous Fling Active\n");
-
 	}
-	else  if (count == 2) {
+	else if (count == 1) {
 		other->client->pers.ricochet = true;
 		gi.dprintf("Ricochet Active\n");
+	}
+	else  if (count == 2) {
+		other->client->pers.nuclear = true;
+		gi.dprintf("The Nuclear Option Active\n");
 	}
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
@@ -2612,9 +2612,9 @@ Shield Dash - Take 5% reduced damage while dashing
 				/* precache */ ""
 	},
 /*UnderQuake item_thrown_pickaxe_upgrade (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-
 Momentous Fling - pickaxes thrown while dashing are faster and deal more damage
 Ricochet - causes the pickaxe to ricochet to nearby enemies
+The Nuclear Option - the thrown pickaxe gains aoe damage
 */
 	{
 		"item_thrown_pickaxe_upgrade",
