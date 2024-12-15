@@ -1096,6 +1096,70 @@ void Cmd_Battle_Cry_f(edict_t* ent)
 }
 
 /*
+==================
+Cmd_Battle_Cry_f
+
+Arcane Shockwave Ability, pay 1/5 of your current health to deal 3 times that much damage to enemies around you
+
+command word = "arcane"
+==================
+*/
+void Cmd_Arcane_Shockwave_f(edict_t* ent)
+{
+	//Arcane Shockwave is on cooldown
+	if (ent->client->last_arcane_shockwave + ARCANE_SHOCKWAVE_COOLDOWN > level.time && ent->client->last_arcane_shockwave) {
+		gi.dprintf("Arcane Shockwave on cooldown, %.1f seconds left\n", ent->client->last_arcane_shockwave + ARCANE_SHOCKWAVE_COOLDOWN - level.time);
+	}
+	//Use Arcane Shockwave
+	else {
+		edict_t* ent_list = NULL;
+		vec3_t dir;
+		int damage;
+
+		//calculate damage to deal to self
+		damage = ent->health / 5;
+		VectorSubtract(ent->s.origin, ent->s.origin, dir);
+		T_Damage(ent, ent, ent, dir, ent->s.origin, vec3_origin, damage, 0, DAMAGE_AREA, MOD_UNKNOWN);
+		
+		//find and deal damage to all enemies in radius
+		while ((ent_list = findradius(ent_list, ent->s.origin, ARCANE_SHOCKWAVE_RADIUS)) != NULL)
+		{
+			if (!ent_list->takedamage)
+				continue;
+			if (ent_list == ent)
+				continue;
+			if (ent_list->svflags & SVF_MONSTER && !(ent_list->svflags & SVF_DEADMONSTER)) {
+				VectorSubtract(ent_list->s.origin, ent->s.origin, dir);
+				T_Damage(ent_list, ent, ent, dir, ent_list->s.origin, vec3_origin, damage * 3, 0, DAMAGE_ARCANE_SHOCKWAVE, MOD_UNKNOWN);
+				
+				//Leeching Blast 
+				if (ent->client->pers.leeching_blast) {
+					ent->health += ent->max_health / 50;
+				}
+				//Expanding wave
+				if (ent->client->pers.expanding_wave) {
+					vec3_t	kvel;
+					float	mass;
+					if (ent_list->mass < 50)
+						mass = 50;
+					else
+						mass = ent_list->mass;
+
+					VectorScale(dir, 1600.0 * (float)150 / mass, kvel);
+					VectorAdd(ent_list->velocity, kvel, ent_list->velocity);
+				}
+				//Arcane Surge
+				if (ent->client->pers.arcane_surge) {
+					ent_list->marked = true;
+					gi.dprintf("%s has been marked\n", ent_list->classname);
+				}
+			}
+		}
+		ent->client->last_arcane_shockwave = level.time;
+	}
+}
+
+/*
 =================
 ClientCommand
 =================
@@ -1190,6 +1254,8 @@ void ClientCommand (edict_t *ent)
 		Cmd_Crit_Next_f(ent);
 	else if (Q_stricmp(cmd, "cry") == 0)
 		Cmd_Battle_Cry_f(ent);
+	else if (Q_stricmp(cmd, "arcane") == 0)
+		Cmd_Arcane_Shockwave_f(ent);
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
 }

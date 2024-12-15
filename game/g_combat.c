@@ -405,7 +405,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	meansOfDeath = mod;
 
 	// easy mode takes half damage
-	if (skill->value == 0 && deathmatch->value == 0 && targ->client)
+	if (skill->value == 0 && deathmatch->value == 0 && targ->client && !inflictor->client)
 	{
 		damage *= 0.5;
 		if (!damage)
@@ -479,6 +479,14 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 			unleashed_damage_mod = client_atk->unleashed_damage_modifier;
 
 			damage *= 1.1 + unleashed_damage_mod;
+		}
+	}
+
+	//Arcane Shockwave ability upgrade - Arcane Surge, marked enemies take *1.25 damage
+	if (client_atk) {
+		if (targ->marked) {
+			damage *= 1.25;
+			gi.dprintf("Dealt marked damage\n");
 		}
 	}
 

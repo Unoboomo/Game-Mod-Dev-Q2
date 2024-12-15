@@ -500,6 +500,25 @@ qboolean Pickup_Thrown_Pickaxe_Upgrade(edict_t* ent, edict_t* other)
 	return true;
 }
 
+qboolean Pickup_Arcane_Shockwave_Upgrade(edict_t* ent, edict_t* other)
+{
+	int count = other->client->pers.inventory[ITEM_INDEX(ent->item)];
+	if (count == 0) {
+		other->client->pers.expanding_wave = true;
+		gi.dprintf("Expanding Wave Active\n");
+	}
+	else if (count == 1) {
+		other->client->pers.leeching_blast = true;
+		gi.dprintf("Leeching Blast Active\n");
+	}
+	else  if (count == 2) {
+		other->client->pers.arcane_surge = true;
+		gi.dprintf("Arcane Surge Active\n");
+	}
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
+
 //======================================================================
 
 void Use_Quad (edict_t *ent, gitem_t *item)
@@ -2627,6 +2646,31 @@ The Nuclear Option - the thrown pickaxe gains aoe damage
 		NULL,
 		/* icon */		"p_adrenaline",
 		/* pickup */	"Thrown Pickaxe Upgrade",
+		/* width */		2,
+				0,
+				NULL,
+				IT_ABILITY_UPGRADE,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+/*UnderQuake item_thrown_pickaxe_upgrade (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Expanding Wave - pushes enemies within range away from you
+Leeching Blast - Restores a 1/50th of your health for each enemy hit, overheal is allowed
+Arcane Surge - Enemies hit are marked, and subsequent attacks deal increased damage to them.
+		*/
+	{
+		"item_arcane_shockwave_upgrade",
+		Pickup_Arcane_Shockwave_Upgrade,
+		UnderQuake_Use,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Arcane Shockwave Upgrade",
 		/* width */		2,
 				0,
 				NULL,

@@ -658,6 +658,10 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.unleashed = false;
 	client->pers.final_stand = false;
 
+	client->pers.expanding_wave = false;
+	client->pers.leeching_blast = false;
+	client->pers.arcane_surge = false;
+
 }
 
 

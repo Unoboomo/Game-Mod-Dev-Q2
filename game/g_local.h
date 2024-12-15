@@ -674,6 +674,7 @@ void T_RadiusDamage (edict_t *inflictor, edict_t *attacker, float damage, edict_
 #define DAMAGE_SWUNG_PICKAXE	0x00000080 // Damage Caused by the swung pickaxe
 #define DAMAGE_THROWN_PICKAXE	0x00000100 // Damage Caused by the thrown pickaxe
 #define DAMAGE_DASH				0x00000200 // Damage Caused by the dash
+#define DAMAGE_ARCANE_SHOCKWAVE 0x00000400 // Damage Caused by the arcane shockwave ability
 
 #define DEFAULT_BULLET_HSPREAD	300
 #define DEFAULT_BULLET_VSPREAD	500
@@ -919,6 +920,11 @@ typedef struct
 	qboolean unleashed;
 	qboolean final_stand;
 
+	//Arcane Shockwave
+	qboolean expanding_wave;
+	qboolean leeching_blast;
+	qboolean arcane_surge;
+
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns
@@ -1037,6 +1043,9 @@ struct gclient_s
 	float last_battle_cry;
 	float unleashed_damage_modifier;
 	float final_stand_length;
+
+	//Arcane Shockwave Ability
+	float last_arcane_shockwave;
 
 };
 
@@ -1191,6 +1200,9 @@ struct edict_s
 
 	// for ricochet thrown pickaxe ability upgrade
 	qboolean		ricocheted;
+
+	//for arcane surge, to mark enemies
+	qboolean		marked;
 };
 
 /*
@@ -1317,3 +1329,6 @@ void Reset_Ricochet_Free(edict_t* ent);
 #define BATTLE_CRY_DURATION 10
 #define BATTLE_CRY_COOLDOWN 90
 #define FURY_UNLEASHED_RADIUS (float) 400
+
+#define ARCANE_SHOCKWAVE_COOLDOWN 90
+#define ARCANE_SHOCKWAVE_RADIUS 500
