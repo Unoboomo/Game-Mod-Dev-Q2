@@ -940,8 +940,11 @@ void fire_pickaxe(edict_t* self, vec3_t start, vec3_t aimdir, int damage, int ki
 	vec3_t		end;
 
 	int		mod = MOD_BLASTER;
-
-	VectorMA(start, PICKAXE_RANGE, aimdir, end);  //calculates the range vector
+	int		range = PICKAXE_RANGE;
+	if (self->client->pers.cleave) {
+		range += self->client->pers.cleave * CLEAVE_RANGE;
+	}
+	VectorMA(start, range, aimdir, end);  //calculates the range vector
 
 	tr = gi.trace(self->s.origin, NULL, NULL, end, self, MASK_SHOT);
 

@@ -1487,7 +1487,7 @@ void Weapon_Pickaxe(edict_t* ent)
 
 	static int	pause_frames[] = { 19, 32, 0 };
 	static int	fire_frames[] = { 5, 0 };
-	int n = 9;
+	float n = 9;
 	/* Fire Rate(Swings per second) = 10 / (n - 3)
 	* n = 9 -> fire rate = 1.666... swings per second
 	* n = 8 -> fire rate = 2 swings per second
@@ -1496,10 +1496,13 @@ void Weapon_Pickaxe(edict_t* ent)
 	if (ent->client->pers.hyper == true) {
 		n = (10 / (10 / (float)(n - 3) * 1.5)) + 3;
 	}
-	if (n < 4) {
-		n = 4;
+	if (ent->client->pers.exuberance) {
+		n -= ent->client->pers.exuberance * EXUBERANCE_SPEED;
 	}
-	Weapon_Generic(ent, 4, n, 52, 55, pause_frames, fire_frames, Weapon_Pickaxe_Fire);
+	if (n < 4.0) {
+		n = 4.0;
+	}
+	Weapon_Generic(ent, 4, (int) n, 52, 55, pause_frames, fire_frames, Weapon_Pickaxe_Fire);
 }
 
 //======================================================================

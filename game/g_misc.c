@@ -2067,7 +2067,9 @@ int Calculate_Swing_Damage(int damage, edict_t* attacker) {
 	if (client_atk->pers.berserk) {
 		damage += (attacker->max_health - attacker->health) / 4;
 	}
-
+	if (client_atk->pers.strength) {
+		damage += client_atk->pers.strength * STRENGTH_DAMAGE;
+	}
 	//Next
 
 	/*

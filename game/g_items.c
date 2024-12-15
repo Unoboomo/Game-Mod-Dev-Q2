@@ -519,6 +519,26 @@ qboolean Pickup_Arcane_Shockwave_Upgrade(edict_t* ent, edict_t* other)
 	return true;
 }
 
+qboolean Pickup_Strength(edict_t* ent, edict_t* other)
+{
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	other->client->pers.strength++;
+	return true;
+}
+
+qboolean Pickup_Exuberance(edict_t* ent, edict_t* other)
+{
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	other->client->pers.exuberance++;
+	return true;
+}
+
+qboolean Pickup_Cleave(edict_t* ent, edict_t* other)
+{
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	other->client->pers.cleave++;
+	return true;
+}
 //======================================================================
 
 void Use_Quad (edict_t *ent, gitem_t *item)
@@ -2675,6 +2695,75 @@ Arcane Surge - Enemies hit are marked, and subsequent attacks deal increased dam
 				0,
 				NULL,
 				IT_ABILITY_UPGRADE,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+/*UnderQuake item_strength (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Strength - increases base damage by 4
+*/
+	{
+		"item_strength",
+		Pickup_Strength,
+		UnderQuake_Use,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Strength",
+		/* width */		2,
+				0,
+				NULL,
+				IT_BLESSING,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+/*UnderQuake item_exuberance (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Exuberance - increases swing speed by 0.2
+*/
+	{
+		"item_exuberance",
+		Pickup_Exuberance,
+		UnderQuake_Use,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Exuberance",
+		/* width */		2,
+				0,
+				NULL,
+				IT_BLESSING,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+/*UnderQuake item_cleave (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Cleave - increases swing speed by 0.4
+*/
+	{
+		"item_cleave",
+		Pickup_Cleave,
+		UnderQuake_Use,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Cleave",
+		/* width */		2,
+				0,
+				NULL,
+				IT_BLESSING,
 				0,
 				NULL,
 				0,

@@ -222,7 +222,7 @@ typedef struct
 
 // Underquake gitem_t->flags
 #define IT_RELIC			128
-#define IT_PICKAXE_UPGRADE	256
+#define IT_BLESSING			256
 #define IT_ABILITY_UPGRADE	512
 
 // gitem_t->weapmodel for weapons indicates model index
@@ -925,6 +925,11 @@ typedef struct
 	qboolean leeching_blast;
 	qboolean arcane_surge;
 
+	//Persistant Data for Underquake Blessings
+	int		strength;
+	int		exuberance;
+	int		cleave;
+
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns
@@ -1333,3 +1338,7 @@ void Reset_Ricochet_Free(edict_t* ent);
 
 #define ARCANE_SHOCKWAVE_COOLDOWN 90
 #define ARCANE_SHOCKWAVE_RADIUS 500
+
+#define STRENGTH_DAMAGE 4
+#define EXUBERANCE_SPEED (float) 0.2
+#define CLEAVE_RANGE ((float) PICKAXE_RANGE * 0.2)
