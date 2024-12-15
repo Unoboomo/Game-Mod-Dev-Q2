@@ -2213,6 +2213,9 @@ int Calculate_Damage_Reduction(int damage, edict_t* targ) {
 	if (client->battle_cry && client->pers.resolve) {
 		percent_damage_taken -= 0.15;
 	}
+	if (client->pers.shield_dash && client->dashing) {
+		percent_damage_taken -= 0.05;
+	}
 
 	// Apply Damage Reduction
 	if (percent_damage_taken < 0.25) {

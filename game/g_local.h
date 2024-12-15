@@ -902,6 +902,7 @@ typedef struct
 	//Dash
 	int max_dashes;
 	qboolean shoulder_bash;
+	qboolean shield_dash;
 
 	//Crit System
 	float crit_multiplier;

@@ -470,6 +470,13 @@ qboolean Pickup_Shoulder_Bash(edict_t* ent, edict_t* other)
 	return true;
 }
 
+qboolean Pickup_Shield_Dash(edict_t* ent, edict_t* other)
+{
+	other->client->pers.shield_dash = true;
+	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	return true;
+}
+
 //======================================================================
 
 void Use_Quad (edict_t *ent, gitem_t *item)
@@ -2658,6 +2665,29 @@ Dashes deal damage
 		NULL,
 		/* icon */		"p_adrenaline",
 		/* pickup */	"Shoulder Bash",
+		/* width */		2,
+				0,
+				NULL,
+				IT_ABILITY_UPGRADE,
+				0,
+				NULL,
+				0,
+				/* precache */ ""
+	},
+/*UnderQuake item_shield_dash (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
+Take 5% reduced damage while dashing
+*/
+	{
+		"item_shield_dash",
+		Pickup_Shield_Dash,
+		UnderQuake_Use,
+		Drop_General,
+		NULL,
+		"items/pkup.wav",
+		"models/items/adrenal/tris.md2", EF_ROTATE,
+		NULL,
+		/* icon */		"p_adrenaline",
+		/* pickup */	"Shield Dash",
 		/* width */		2,
 				0,
 				NULL,
