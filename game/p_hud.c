@@ -315,15 +315,19 @@ void HelpComputer (edict_t *ent)
 
 	// send the layout
 	Com_sprintf (string, sizeof(string),
-		"xv 32 yv 8 picn help "			// background
+		"xv 32 yv 8 picn i_fixme "			// background
 		"xv 202 yv 12 string2 \"%s\" "		// skill
 		"xv 0 yv 24 cstring2 \"%s\" "		// level name
-		"xv 0 yv 54 cstring2 \"%s\" "		// help 1
-		"xv 0 yv 110 cstring2 \"%s\" "		// help 2
-		"xv 50 yv 164 string2 \" kills     goals    secrets\" "
-		"xv 50 yv 172 string2 \"%3i/%3i     %i/%i       %i/%i\" ", 
-		sk,
-		level.level_name,
+		"xv 0 yv 54 cstring2 \"%s\" "		// UnderQuake help message
+		"xv 0 yv 78 cstring2 \"%s\" "		// UnderQuake help message pt 2
+		"xv 0 yv 120 cstring2 \"%s\" "		// help 1
+		"xv 0 yv 176 cstring2 \"%s\" "		// help 2
+		"xv 0 yv 230 cstring2 \"Kills     Goals     Items\" "
+		"xv 0 yv 238 cstring2 \"%.3i/%.3i     %i/%i     %.3i/%.3i\" ", 
+		"",
+		"WELCOME TO UNDERQUAKE",
+		"Progression plays as normal. Throughout the maps,\nyou will find Relics, Ability Upgrades, and\nBlessings to power up your run.",
+		"You also have Abilities, to give you a boost in\n All item descriptions and necessary keybinds\ncan be found in the readme",
 		game.helpmessage1,
 		game.helpmessage2,
 		level.killed_monsters, level.total_monsters, 

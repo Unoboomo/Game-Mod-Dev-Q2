@@ -343,6 +343,7 @@ qboolean Pickup_Vampirism(edict_t* ent, edict_t* other)
 {
 	other->client->pers.vampire = true;
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -350,6 +351,7 @@ qboolean Pickup_Hyperstone(edict_t* ent, edict_t* other)
 {
 	other->client->pers.hyper = true;
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -357,6 +359,7 @@ qboolean Pickup_Berserkers_Pendant(edict_t* ent, edict_t* other)
 {
 	other->client->pers.berserk = true;
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -364,6 +367,7 @@ qboolean Pickup_Resurrection(edict_t* ent, edict_t* other)
 {
 	other->client->pers.resurrect = ITEM_INDEX(ent->item);
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -371,6 +375,7 @@ qboolean Pickup_Master_Pickaxe(edict_t* ent, edict_t* other)
 {
 	other->client->pers.master_pickaxe = true;
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -378,6 +383,7 @@ qboolean Pickup_Sonic_Boom(edict_t* ent, edict_t* other)
 {
 	other->client->pers.sonic = true;
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -385,6 +391,7 @@ qboolean Pickup_Dillons_Claw(edict_t * ent, edict_t * other)
 {
 	other->client->pers.claw = true;
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -392,6 +399,7 @@ qboolean Pickup_Shadows_Fang(edict_t * ent, edict_t * other)
 {
 	other->client->pers.fang = true;
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -399,6 +407,7 @@ qboolean Pickup_Hoodies_Pillow(edict_t* ent, edict_t* other)
 {
 	other->client->pers.pillow = true;
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -406,6 +415,7 @@ qboolean Pickup_Large_Ember(edict_t* ent, edict_t* other)
 {
 	other->client->pers.ember = true;
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -416,6 +426,7 @@ qboolean Pickup_Hot_Cross_Bun(edict_t* ent, edict_t* other)
 	other->max_health += 1;
 	if (other->health < other->max_health)
 		other->health = other->max_health;
+	level.found_secrets++;
 	return true;
 }
 
@@ -438,6 +449,7 @@ qboolean Pickup_Crit_Upgrade(edict_t* ent, edict_t* other)
 		gi.dprintf("Critical Combo Active\n");
 	}
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -458,6 +470,7 @@ qboolean Pickup_Battle_Cry_Upgrade(edict_t* ent, edict_t* other)
 		gi.dprintf("Final Stand Active\n");
 	}
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -478,6 +491,7 @@ qboolean Pickup_Dash_Upgrade(edict_t* ent, edict_t* other)
 		gi.dprintf("Shield Dash Active\n");
 	}
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -497,6 +511,7 @@ qboolean Pickup_Thrown_Pickaxe_Upgrade(edict_t* ent, edict_t* other)
 		gi.dprintf("The Nuclear Option Active\n");
 	}
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -516,6 +531,7 @@ qboolean Pickup_Arcane_Shockwave_Upgrade(edict_t* ent, edict_t* other)
 		gi.dprintf("Arcane Surge Active\n");
 	}
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -523,6 +539,7 @@ qboolean Pickup_Strength(edict_t* ent, edict_t* other)
 {
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	other->client->pers.strength++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -530,6 +547,7 @@ qboolean Pickup_Exuberance(edict_t* ent, edict_t* other)
 {
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	other->client->pers.exuberance++;
+	level.found_secrets++;
 	return true;
 }
 
@@ -537,6 +555,7 @@ qboolean Pickup_Cleave(edict_t* ent, edict_t* other)
 {
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	other->client->pers.cleave++;
+	level.found_secrets++;
 	return true;
 }
 //======================================================================
@@ -2576,9 +2595,9 @@ increased max hp by 1
 				/* precache */ ""
 	},
 /*UnderQuake item_crit_upgrade (.3 .3 1) (-16 -16 -16) (16 16 16) <---- "I dont know what these numbers mean, and i dont need to" -Unoboomo
-1. Every hit fills up the crit gauge. When full, pressing MOUSE3 causes the next attack to crit
-2. Critical hits stun enemies
-3. Consecutive successful attacks (attacks that hit) increase crit chance
+Crit Gauge - Every hit fills up the crit gauge. When full, pressing MOUSE3 causes the next attack to crit
+Critical Stun - Critical hits stun enemies
+Critical Combo - Consecutive successful attacks (attacks that hit) increase crit chance
 */
 	{
 		"item_crit_upgrade",

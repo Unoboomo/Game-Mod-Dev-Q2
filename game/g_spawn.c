@@ -667,6 +667,7 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 				}
 				
 				ent->classname = Random_Item_Classname(relic_list, &relic_list_length, "item_hot_cross_bun", MAX_RELICS);
+				level.total_secrets++;
 			}
 
 			if (item_flags & IT_AMMO) {
@@ -690,6 +691,7 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 					gi.dprintf("%s\n", item->pickup_name);
 
 				}
+				level.total_secrets++;
 			}
 
 			if (item_flags & (IT_POWERUP|IT_UPGRADE)) {
@@ -702,6 +704,7 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 				}
 				
 				ent->classname = Random_Item_Classname(ability_upgrade_list, &ability_upgrade_list_length, "item_hot_cross_bun", MAX_ABILITY_UPGRADES);
+				level.total_secrets++;
 			}
 
 			if (item_flags & IT_ARMOR) {

@@ -163,7 +163,7 @@ void use_target_secret (edict_t *ent, edict_t *other, edict_t *activator)
 
 void SP_target_secret (edict_t *ent)
 {
-	if (deathmatch->value)
+	if (deathmatch->value || 1) //Dont spawn secrets because we are hijacking the level.total_secrets to use for # of UnderQuake Items found
 	{	// auto-remove for deathmatch
 		G_FreeEdict (ent);
 		return;
